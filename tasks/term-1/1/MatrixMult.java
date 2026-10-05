@@ -3,13 +3,11 @@ public class MatrixMult {
 	public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix){
 		if (firstMatrix == null || firstMatrix.length == 0 || firstMatrix[0] == null ||
 				secondMatrix == null || secondMatrix.length == 0 || secondMatrix[0] == null) {
-			System.out.println("Одна из матриц пуста!");
-			return new double[1][1];
+			throw new IllegalArgumentException("Матрицы не должны быть пустыми!");
 		}
 
 		if (firstMatrix[0].length != secondMatrix.length) {
-			System.out.println("Размеры матриц несогласованы!");
-			return new double[1][1];
+			throw new IllegalArgumentException("Матрицы не согласованы по размеру!");
 		}
 
 		// таймер
