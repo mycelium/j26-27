@@ -41,34 +41,25 @@ public class MatrixMult {
 	}
 
 	public static void main(String[] args) {
-		int n = 10;
-		int m = 5;
-		double[][] firstMatrix = new double[n][m];
-		double[][] secondMatrix = new double[m][n];
+		int n = 1000;
+
+		double[][] firstMatrix = new double[n][n];
+		double[][] secondMatrix = new double[n][n];
 
 		// заполняем матрицы
 		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				firstMatrix[i][j] = i + 2 * j;
-			}
-		}
-
-		// заполняем матрицы
-		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++) {
-				secondMatrix[i][j] = 2 * i - j;
+				firstMatrix[i][j] = i + 2*j;
+				secondMatrix[i][j] = 2*i - j;
 			}
 		}
 
+		long startTime = System.nanoTime();
 		double[][] result = multiply(firstMatrix, secondMatrix);
+		long endTime = System.nanoTime();
 
-		System.out.println("Первая матрица:");
-		printMatrix(firstMatrix);
-
-		System.out.println("Вторая матрица:");
-		printMatrix(secondMatrix);
-
-		System.out.println("Результат умножения:");
-		printMatrix(result);
+		double seconds = (endTime - startTime) / 1_000_000_000.0;
+		System.out.println("Время умножения: " + seconds + " секунд");
+		System.out.println("Проверочное значение result[0][0]: " + result[0][0]);
 	}
 }
