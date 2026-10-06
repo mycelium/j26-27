@@ -3,15 +3,26 @@ public class MatrixMult {
 			double[][] firstMatrix,
 			double[][] secondMatrix
 	){
-		int n = firstMatrix.length;
-		int m = secondMatrix[0].length;
-		int l = secondMatrix.length;
+		if (firstMatrix[0].length == 0 || secondMatrix[0].length) {
+			return new double[0][0]
+		}
 
-		double[][] result = new double[n][m];
+		int firstRows = firstMatrix.length;
+		int firstColumns = firstMatrix[0].length;
 
-		for (int i = 0; i < n; i++) {
-			for (int k = 0; k < l; k++) {
-				for (int j = 0; j < m; j++) {
+		int secondRows = secondMatrix.length;
+		int secondColumns = secondMatrix[0].length;
+
+		// кол-во столбцов 1 не равно колву строк 2 матрицы
+		if (firstColumns != secondRows) {
+			return new double[0][0]
+		}
+
+		double[][] result = new double[firstRows][secondColumns];
+
+		for (int i = 0; i < firstRows; i++) {
+			for (int k = 0; k < secondRows; k++) {
+				for (int j = 0; j < secondColumns; j++) {
 					result[i][j] += firstMatrix[i][k] * secondMatrix[k][j];
 				}
 			}
