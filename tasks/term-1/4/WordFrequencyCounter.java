@@ -33,7 +33,7 @@ public class WordFrequencyCounter {
         WordFrequencyCounter counter = new WordFrequencyCounter();
         Path filePath = Path.of(args[0]);
 
-        Map<String, Integer> freq;
+        Map<String, Integer> freq = new HashMap<>();
 
         if (args[1].equals("--file")) {
             freq = counter.countWordsFile(filePath);
