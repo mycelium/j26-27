@@ -37,7 +37,7 @@ public class WordFrequencyCounter {
 
         if (args[1].equals("--file")) {
             freq = counter.countWordsFile(filePath);
-        } else if (args.equals("--stream")) {
+        } else if (args[1].equals("--stream")) {
             freq = counter.countWordsStream(filePath);
         }
 
