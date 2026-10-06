@@ -1,16 +1,45 @@
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.nio.file.Path;
 
 public class WordFrequencyCounter {
 
-    public Map<String, Integer> countWordsFile(Path filePath) {
+    public Map<String, Integer> countWordsFile(Path filePath) throws IOException {
+        String fileText = Files.readString(filePath);
+        Map<String, Integer> freq = new HashMap<>();
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < fileText.length(); i++) {
+            char c = fileText.charAt(i);
+            if (Character.isLetterOrDigit(c)) {
+                sb.append(c);
+            } else {
+                addWord(sb, freq);
+            }
+        }
+
+        addWord(sb, freq);
+
+        return freq;
+    }
+
+    public Map<String, Integer> countWordsStream(Path filePath) throws IOException {
         // read file, tokenize words, update map
         return null;
     }
 
-    public Map<String, Integer> countWordsStream(Path filePath) {
-        // read file, tokenize words, update map
-        return null;
+    public void addWord(StringBuilder sb, Map<String, Integer> freq) {
+        if (sb.isEmpty()) {
+            return;
+        }
+
+        String word = sb.toString();
+        int count = freq.getOrDefault(word, 0);
+        freq.put(word, count + 1);
+
+        sb.setLength(0);
     }
 
     public void printFrequencies(Map<String, Integer> frequencies) {
