@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 public class WordFrequencyCounter {
 
@@ -10,24 +11,34 @@ public class WordFrequencyCounter {
         Map<String, Integer> freq = new HashMap<>();
 
         StringBuilder sb = new StringBuilder();
+        countChar(sb, fileText, freq);
 
-        for (int i = 0; i < fileText.length(); i++) {
-            char c = fileText.charAt(i);
+        return freq;
+    }
+
+    public Map<String, Integer> countWordsStream(Path filePath) throws IOException {
+        Map<String, Integer> freq = new HashMap<>();
+        StringBuilder sb = new StringBuilder();
+
+        try (Stream<String> stream = Files.lines(filePath)) {
+            stream.forEach(line -> {
+                countChar(sb, line, freq);
+            });
+        }
+
+        return freq;
+    }
+
+    public void countChar(StringBuilder sb, String s, Map<String, Integer> freq) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
             if (Character.isLetterOrDigit(c)) {
                 sb.append(c);
             } else {
                 addWord(sb, freq);
             }
         }
-
         addWord(sb, freq);
-
-        return freq;
-    }
-
-    public Map<String, Integer> countWordsStream(Path filePath) throws IOException {
-        // read file, tokenize words, update map
-        return null;
     }
 
     public void addWord(StringBuilder sb, Map<String, Integer> freq) {
@@ -48,8 +59,8 @@ public class WordFrequencyCounter {
         }
     }
 
-    public static void main(String[] args) {
-        if (args.length == 0) {
+    public static void main(String[] args) throws IOException {
+        if (args.length < 2) {
             System.out.println("не указан путь к файлу");
             System.out.println("пример:");
             System.out.println("java WordFrequencyCounter --file input.txt");
@@ -60,14 +71,17 @@ public class WordFrequencyCounter {
         }
 
         WordFrequencyCounter counter = new WordFrequencyCounter();
-        Path filePath = Path.of(args[0]);
+        Path filePath = Path.of(args[1]);
 
         Map<String, Integer> freq = new HashMap<>();
 
-        if (args[1].equals("--file")) {
+        if (args[0].equals("--file")) {
             freq = counter.countWordsFile(filePath);
-        } else if (args[1].equals("--stream")) {
+        } else if (args[0].equals("--stream")) {
             freq = counter.countWordsStream(filePath);
+        } else {
+            System.out.println("неизвестный флаг");
+            return;
         }
 
         counter.printFrequencies(freq);
