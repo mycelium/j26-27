@@ -1,0 +1,20 @@
+First matrix:
+     1,0     2,0     3,0
+     4,0     5,0     6,0
+     7,0     8,0     9,0
+
+Second matrix:
+     1,0     0,0     0,0
+     0,0     2,0     0,0
+     0,0     0,0     3,0
+
+Multiplication result:
+     1,0     4,0     9,0
+     4,0    10,0    18,0
+     7,0    16,0    27,0
+
+Results from both algorithms are equal: true
+Naive algorithm: 980,22 ms average runtime
+i-k-j algorithm: 158,99 ms average runtime
+Results for large matrices are equal: true
+Runtime reduction: 83,78%
