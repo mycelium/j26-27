@@ -15,9 +15,9 @@ public class Main {
         double[][] result = new double[size][size];
 
         long startTime = System.nanoTime();
-        result = MatrixMult(m1, m2);
+        result = MatrixMult.multiply(m1, m2);
         long endTime = System.nanoTime();
 
-        System.out.println("Time for original method: " + (end - start) + " ms");
+        System.out.println("Time for original method: " + (endTime - startTime) + " ms");
     }
 }
