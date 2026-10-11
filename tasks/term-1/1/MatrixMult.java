@@ -1,6 +1,34 @@
 public class MatrixMult {
 
-	public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix){
+    public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix) {
+        int n = firstMatrix.length;
+        int m = firstMatrix[0].length;
+        int p = secondMatrix[0].length;
+
+        double[][] result = new double[n][p];
+
+        long startTime = System.nanoTime();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < p; j++) {
+                double sum = 0;
+
+                for (int k = 0; k < m; k++) {
+                    sum += firstMatrix[i][k] * secondMatrix[k][j];
+                }
+
+                result[i][j] = sum;
+            }
+        }
+
+        long endTime = System.nanoTime();
+
+        System.out.println("Time for original multiplication: " + (endTime - startTime) + " ns");
+
+        return result;
+    }
+
+	public static double[][] multiplyO(double[][] firstMatrix, double[][] secondMatrix){
         int n = firstMatrix.length;
         int m = firstMatrix[0].length;
         int p = secondMatrix[0].length;
@@ -25,7 +53,7 @@ public class MatrixMult {
         }
         long endTime = System.nanoTime();
 
-        System.out.println("Time for original multiplication: " + (endTime - startTime) + " ms");
+        System.out.println("Time for optimized multiplication: " + (endTime - startTime) + " ns");
 
         return result;
 	}
@@ -73,8 +101,38 @@ public class MatrixMult {
 
         long endTime = System.nanoTime();
 
-        System.out.println("Time for optimized multiplication: " + (endTime - startTime) + " ms");
+        System.out.println("Time for linear multiplication: " + (endTime - startTime) + " ns");
 
         return result;
 	}
+
+	public static double[][] multiplyCached(double[][] firstMatrix, double[][] secondMatrix) {
+        int n = firstMatrix.length;
+        int m = firstMatrix[0].length;
+        int p = secondMatrix[0].length;
+
+        if (m != secondMatrix.length) {
+            System.out.println("The matrices' sizes are imcompatible... :(");
+            System.out.println("Returning default matrix [[0]]...");
+            return new double[1][1];
+        }
+
+        double[][] result = new double[n][p];
+
+        long startTime = System.nanoTime();
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < m; k++) {
+                double cachedElement = firstMatrix[i][k];
+                for (int j = 0; j < p; j++) {
+                    result[i][j] += cachedElement * secondMatrix[k][j];
+                }
+            }
+        }
+        long endTime = System.nanoTime();
+
+        System.out.println("Time for cached multiplication: " + (endTime - startTime) + " ns");
+
+        return result;
+	}
+
 }
