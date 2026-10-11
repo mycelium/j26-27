@@ -19,5 +19,11 @@ public class Main {
         long endTime = System.nanoTime();
 
         System.out.println("Time for original method: " + (endTime - startTime) + " ms");
+
+        long startTime2 = System.nanoTime();
+        result = MatrixMult.multiplyLinear(m1, m2);
+        long endTime2 = System.nanoTime();
+
+        System.out.println("Time for linear method: " + (endTime2 - startTime2) + " ms");
     }
 }
