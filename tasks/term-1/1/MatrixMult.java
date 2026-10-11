@@ -23,7 +23,7 @@ public class MatrixMult {
 
         long endTime = System.nanoTime();
 
-        System.out.println("Time for original multiplication: " + (endTime - startTime) + " ns");
+        System.out.println((endTime - startTime) + " - time for original multiplication in ns");
 
         return result;
     }
@@ -53,7 +53,7 @@ public class MatrixMult {
         }
         long endTime = System.nanoTime();
 
-        System.out.println("Time for optimized multiplication: " + (endTime - startTime) + " ns");
+        System.out.println((endTime - startTime) + " - time for optimized multiplication in ns");
 
         return result;
 	}
@@ -101,7 +101,7 @@ public class MatrixMult {
 
         long endTime = System.nanoTime();
 
-        System.out.println("Time for linear multiplication: " + (endTime - startTime) + " ns");
+        System.out.println((endTime - startTime) + " - time for linear multiplication in ns");
 
         return result;
 	}
@@ -130,7 +130,7 @@ public class MatrixMult {
         }
         long endTime = System.nanoTime();
 
-        System.out.println("Time for cached multiplication: " + (endTime - startTime) + " ns");
+        System.out.println((endTime - startTime) + " - time for cached multiplication in ns");
 
         return result;
 	}
