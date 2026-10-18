@@ -1,7 +1,7 @@
 # Java lessons and tasks 2025-2026
 
 Group: 40101
-Name: Andrey Peremetov
+Name: Переметов Андрей
 
 ## Git task
 
