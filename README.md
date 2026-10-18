@@ -1,8 +1,7 @@
 # Java lessons and tasks 2025-2026
 
-Group: All Groups
-Name: A.Lukashin
-
+Group: 40101
+Name: B.Kan
 ## Git task
 
 1. Write your github login into the google spreadsheet
