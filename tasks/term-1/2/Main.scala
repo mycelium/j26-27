@@ -68,21 +68,17 @@ object Main {
       else isSafe(row, column, previousRow + 1)
     }
 
-    def place(row: Int): Boolean = {
-      def tryColumn(column: Int): Boolean = {
-        if (column == size) false
-        else if (isSafe(row, column, 0)) {
-          queens(row) = column
-          if (place(row + 1)) true
-          else tryColumn(column + 1)
-        } else tryColumn(column + 1)
-      }
-
+    def place(row: Int, column: Int): Boolean = {
       if (row == size) true
-      else tryColumn(0)
+      else if (column == size) false
+      else if (isSafe(row, column, 0)) {
+        queens(row) = column
+        if (place(row + 1, 0)) true
+        else place(row, column + 1)
+      } else place(row, column + 1)
     }
 
-    if (place(0)) Some(queens) else None
+    if (place(0, 0)) Some(queens) else None
   }
 
   def printBoard(queens: Array[Int]): Unit = {
