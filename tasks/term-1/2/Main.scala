@@ -61,21 +61,17 @@ object Main {
   def nQueens(size: Int): Option[Array[Int]] = {
     val queens = Array.fill(size)(-1)
 
-    def isSafe(row: Int, column: Int): Boolean = {
-      def check(previousRow: Int): Boolean = {
-        if (previousRow == row) true
-        else if (queens(previousRow) == column ||
-          math.abs(queens(previousRow) - column) == row - previousRow) false
-        else check(previousRow + 1)
-      }
-
-      check(0)
+    def isSafe(row: Int, column: Int, previousRow: Int): Boolean = {
+      if (previousRow == row) true
+      else if (queens(previousRow) == column ||
+        math.abs(queens(previousRow) - column) == row - previousRow) false
+      else isSafe(row, column, previousRow + 1)
     }
 
     def place(row: Int): Boolean = {
       def tryColumn(column: Int): Boolean = {
         if (column == size) false
-        else if (isSafe(row, column)) {
+        else if (isSafe(row, column, 0)) {
           queens(row) = column
           if (place(row + 1)) true
           else tryColumn(column + 1)
