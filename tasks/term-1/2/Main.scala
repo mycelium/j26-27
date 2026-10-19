@@ -15,6 +15,12 @@ object Main {
     val exampleString: String = "(Example (string) for ( Exercise ) 2. (Parentheses Balancing))" // true
     println("Bracket balance: " + balance(exampleString.toList))
     println()
+
+    println("Exercise 3. Counting Change")
+    val money: Int = 4
+    val coins: List[Int] = List(1, 2)
+    println("Number of ways: " + countChange(money, coins))
+    println()
   }
 
   /**
@@ -56,14 +62,23 @@ object Main {
   }
 
   /**
-   * Exercise 3 Counting Change
+   * Exercise 3. Counting Change
    * Write a recursive function that counts how many different ways you can make
    * change for an amount, given a list of coin denominations. For example,
    * there is 1 way to give change for 5 if you have coins with denomiation
    * 2 and 3: 2+3.
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-    ???
+    if (money == 0) {
+      1
+    }
+    else if (money < 0) {
+      0
+    } else if (coins.isEmpty) {
+      0
+    } else {
+      countChange(money - coins.head, coins) + countChange(money, coins.tail)
+    }
   }
 
   /**
