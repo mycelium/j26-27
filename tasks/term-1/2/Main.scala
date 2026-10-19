@@ -21,6 +21,16 @@ object Main {
     val coins: List[Int] = List(1, 2)
     println("Number of ways: " + countChange(money, coins))
     println()
+
+    println("Exercise 4. N-Queens Problem")
+    val size: Int = 4
+    val solution: Option[Array[Int]] = nQueens(size)
+    if (solution.isDefined) {
+      val board: Array[Int] = solution.get
+      printQueens(board)
+    } else {
+      println("No solution found for size " + size)
+    }
   }
 
   /**
@@ -82,7 +92,7 @@ object Main {
   }
 
   /**
-   * Excerice 4 N-Queens Problem
+   * Exercise 4. N-Queens Problem
    * Write a function that provides a solution for n-queens problem if possible
    * Input parameter represents board size and number of queens
    * Output is an array: index represents row number and value represents column number.
@@ -94,7 +104,68 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
-    ???
+    val board: Array[Int] = new Array[Int](size)
+
+    def isSafe(row: Int, col: Int): Boolean = {
+      def checkPreviousRows(currentRow: Int): Boolean = {
+        if (currentRow == row) {
+          true
+        } else {
+          val placedCol: Int = board(currentRow)
+          if (placedCol == col || placedCol - currentRow == col - row || placedCol + currentRow == col + row) {
+            false
+          } else {
+            checkPreviousRows(currentRow + 1)
+          }
+        }
+      }
+
+      checkPreviousRows(0)
+    }
+
+    def placeQueens(row: Int): Boolean = {
+      if (row == size) {
+        true
+      } else {
+        def tryColumns(col: Int): Boolean = {
+          if (col == size) {
+            false
+          } else {
+            if (isSafe(row, col)) {
+              board(row) = col
+              if (placeQueens(row + 1)) {
+                true
+              } else {
+                tryColumns(col + 1)
+              }
+            } else {
+              tryColumns(col + 1)
+            }
+          }
+        }
+
+        tryColumns(0)
+      }
+    }
+
+    if (placeQueens(0)) {
+      Some(board)
+    } else {
+      None
+    }
   }
 
+  def printQueens(board: Array[Int]): Unit = {
+    val size: Int = board.length
+    for (row <- 0 until size) {
+      for (col <- 0 until size) {
+        if (board(row) == col) {
+          print("1 ")
+        } else {
+          print("0 ")
+        }
+      }
+      println()
+    }
+  }
 }
