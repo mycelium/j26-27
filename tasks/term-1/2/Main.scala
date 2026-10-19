@@ -10,6 +10,11 @@ object Main {
       println()
     }
     println()
+
+    println("Exercise 2. Parentheses Balancing")
+    val exampleString: String = "(Example (string) for ( Exercise ) 2. (Parentheses Balancing))" // true
+    println("Bracket balance: " + balance(exampleString.toList))
+    println()
   }
 
   /**
@@ -25,10 +30,29 @@ object Main {
   }
 
   /**
-   * Exercise 2 Parentheses Balancing
+   * Exercise 2. Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-    ???
+    def coutingBrackets(chars: List[Char], countOpenBrackets: Int, countCloseBracket: Int): Boolean = {
+      if (chars.isEmpty) {
+        countOpenBrackets == countCloseBracket
+      } else if (countCloseBracket > countOpenBrackets) {
+        false
+      } else {
+        val currentSymbol: Char = chars.head
+        val remainingList: List[Char] = chars.tail
+
+        if (currentSymbol == '(') {
+          coutingBrackets(remainingList, countOpenBrackets + 1, countCloseBracket)
+        } else if (currentSymbol == ')') {
+          coutingBrackets(remainingList, countOpenBrackets, countCloseBracket + 1)
+        } else {
+          coutingBrackets(remainingList, countOpenBrackets, countCloseBracket)
+        }
+      }
+    }
+
+    coutingBrackets(chars, 0, 0)
   }
 
   /**
