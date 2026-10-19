@@ -6,9 +6,10 @@ public class MatrixMult {
 		double[][] result = new double[rowsA][colsB];
 
 		for (int i = 0; i < rowsA; i++) {
-			for (int j = 0; j < colsB; j++) {
-				for (int k = 0; k < colsA; k++) {
-					result[i][j] += firstMatrix[i][k] * secondMatrix[k][j];
+			for (int k = 0; k < colsA; k++) {
+				double temp = firstMatrix[i][k];
+				for (int j = 0; j < colsB; j++) {
+					result[i][j] += temp * secondMatrix[k][j];
 				}
 			}
 		}
