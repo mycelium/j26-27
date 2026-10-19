@@ -47,19 +47,6 @@ public class MatrixMult {
 		return resultMatrix;
 	}
 
-	private static void printMatrix(double[][] matrix) {
-		if (matrix == null || matrix.length == 0) {
-			throw new IllegalArgumentException("Matrix is empty");
-		}
-
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				System.out.printf("%.2f\t ", matrix[i][j]);
-			}
-			System.out.println();
-		}
-	}
-
 	private static void fillMatrixWithRandomValues(double[][] matrix, int minValue, int maxValue) {
 		if (matrix == null || matrix.length == 0) {
 			throw new IllegalArgumentException("Matrix is empty");
@@ -74,6 +61,8 @@ public class MatrixMult {
 
 	public static void main(String[] args) {
 		try {
+			int numberOfTestRuns = 10;
+
 			int minValueForFillingMatrixWithRandomValues = 1;
 			int maxValueForFillingMatrixWithRandomValues = 10;
 
@@ -87,41 +76,25 @@ public class MatrixMult {
 			double[][] secondMatrix = new double[rowSecondMatrix][columnSecondMatrix];
 			fillMatrixWithRandomValues(secondMatrix, minValueForFillingMatrixWithRandomValues, maxValueForFillingMatrixWithRandomValues);
 
+			System.out.println("Running algorithm 'multiply' " + numberOfTestRuns + " times");
 			long startTime = System.currentTimeMillis();
-
-			double[][] resultMatrix = multiply(firstMatrix, secondMatrix);
-
+			for (int run = 0; run < numberOfTestRuns; run++) {
+				double[][] resultMatrix = multiply(firstMatrix, secondMatrix);
+			}
 			long endTime = System.currentTimeMillis();
 			long durationMultiply = endTime - startTime;
+			System.out.println("Average execution time for 'multiply': " + durationMultiply / numberOfTestRuns + "ms");
 
-//			System.out.println("firstMatrix:");
-//			printMatrix(firstMatrix);
-//
-//			System.out.println("secondMatrix:");
-//			printMatrix(secondMatrix);
-//
-//			System.out.println("resultMatrix:");
-//			printMatrix(resultMatrix);
+			System.out.println();
 
-			System.out.println("Execution time of multiply: " + durationMultiply + "ms");
-
+			System.out.println("Running algorithm 'multiplyCyclePermutation' " + numberOfTestRuns + " times");
 			startTime = System.currentTimeMillis();
-
-			resultMatrix = multiplyCyclePermutation(firstMatrix, secondMatrix);
-
+			for (int run = 0; run < numberOfTestRuns; run++) {
+				double[][] resultMatrix = multiplyCyclePermutation(firstMatrix, secondMatrix);
+			}
 			endTime = System.currentTimeMillis();
 			durationMultiply = endTime - startTime;
-
-//			System.out.println("firstMatrix:");
-//			printMatrix(firstMatrix);
-//
-//			System.out.println("secondMatrix:");
-//			printMatrix(secondMatrix);
-//
-//			System.out.println("resultMatrix:");
-//			printMatrix(resultMatrix);
-
-			System.out.println("Execution time of multiplyCyclePermutation: " + durationMultiply + "ms");
+			System.out.println("Average execution time for 'multiplyCyclePermutation': " + durationMultiply / numberOfTestRuns + "ms");
 		} catch (IllegalArgumentException e) {
 			System.out.println("Error when working with matrices: " + e.getMessage());
 		} catch (java.lang.Exception e) {
