@@ -17,6 +17,13 @@ object Main {
 
     println(s"countChange(4, List(1, 2)) = ${countChange(4, List(1, 2))}")
     println(s"countChange(300, List(5, 10, 20, 50)) = ${countChange(300, List(5, 10, 20, 50))}")
+
+    nQueens(4) match {
+      case Some(board) =>
+        println("Solution found:")
+        printQueens(board)
+      case None => println("No solution found")
+    }
   }
 
   /**
@@ -77,8 +84,37 @@ object Main {
    * 0 0 1 0
    */
 
-  // def nQueens(size: Int): Option[Array[Int]] = {
+  def nQueens(size: Int): Option[Array[Int]] = {
+    def isSafeCheck(col: Int, rest: List[Int], dist: Int): Boolean = rest match {
+      case Nil => true
+      case head :: tail =>
+        if (head == col || math.abs(head - col) == dist) false
+        else isSafeCheck(col, tail, dist + 1)
+    }
 
-  // }
+    def isSafe(col: Int, placed: List[Int]): Boolean = isSafeCheck(col, placed, 1)
+
+    def search(placed: List[Int]): Option[List[Int]] = {
+      if (placed.length == size) Some(placed)
+      else {
+        (0 until size).iterator
+          .filter(col => isSafe(col, placed))
+          .map(col => search(col :: placed))
+          .collectFirst { case Some(solution) => solution }
+      }
+    }
+
+    search(Nil).map(_.reverse.toArray)
+  }
+
+  def printQueens(board: Array[Int]): Unit = {
+    for (row <- board.indices) {
+      for (col <- board.indices) {
+        if (board(row) == col) print("1 ")
+        else print("0 ")
+      }
+      println()
+    }
+  }
 
 }
