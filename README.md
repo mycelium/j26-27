@@ -1,7 +1,7 @@
 # Java lessons and tasks 2025-2026
 
-Group: All Groups
-Name: A.Lukashin
+Group: 5130201/40101
+Name: Peng Zhiyuan
 
 ## Git task
 
