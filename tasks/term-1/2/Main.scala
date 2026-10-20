@@ -14,6 +14,9 @@ object Main {
     println(balance("I told him (that it’s not (yet) done). (But he wasn't listening)".toList))
     println(balance(":-)".toList))
     println(balance("())(".toList))
+
+    println(s"countChange(4, List(1, 2)) = ${countChange(4, List(1, 2))}")
+    println(s"countChange(300, List(5, 10, 20, 50)) = ${countChange(300, List(5, 10, 20, 50))}")
   }
 
   /**
@@ -52,9 +55,15 @@ object Main {
    * there is 1 way to give change for 5 if you have coins with denomiation
    * 2 and 3: 2+3.
    */
-  // def countChange(money: Int, coins: List[Int]): Int = {
-
-  // }
+  def countChange(money: Int, coins: List[Int]): Int = {
+    if (money < 0) 0
+    else if (money == 0) 1
+    else coins match {
+      case Nil => 0
+      case coin :: tail =>
+        countChange(money - coin, coins) + countChange(money, tail)
+    }
+  }
   
   /**
    * Excerice 4 N-Queens Problem
