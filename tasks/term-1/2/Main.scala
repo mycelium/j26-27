@@ -1,5 +1,5 @@
 package recfun
-import common._
+// import common._
 
 object Main {
   def main(args: Array[String]) = {
@@ -9,6 +9,11 @@ object Main {
         print(pascal(col, row) + " ")
       println()
     }
+
+    println(balance("(if (zero? x) max (/ 1 x))".toList))
+    println(balance("I told him (that it’s not (yet) done). (But he wasn't listening)".toList))
+    println(balance(":-)".toList))
+    println(balance("())(".toList))
   }
 
   /**
@@ -26,9 +31,19 @@ object Main {
   /**
    * Exercise 2 Parentheses Balancing
    */
-  // def balance(chars: List[Char]): Boolean = {
-   
-  // }
+  def balance(chars: List[Char]): Boolean = {
+    def loop(remaining: List[Char], count: Int): Boolean = {
+      if (count < 0) false
+      else remaining match {
+        case Nil => count == 0
+        case '(' :: tail => loop(tail, count + 1)
+        case ')' :: tail => loop(tail, count - 1)
+        case _ :: tail => loop(tail, count)
+      }
+    }
+
+    loop(chars, 0)
+  }
 
   /**
    * Exercise 3 Counting Change
