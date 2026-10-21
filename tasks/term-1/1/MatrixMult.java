@@ -36,5 +36,23 @@ public class MatrixMult {
         //return new double[1][1];
 	}
 
-    public static void main(String[]
+    public static void main(String[] args){
+        for (int n : new int[]{100, 300, 500, 1000}){
+            double[][] fst = randomMatrix(n);
+            double[][] snd = randomMatrix(n);
+            long start = System.nanoTime(); // начало замера
+            double[][] trd = multiply(fst, snd);
+            long elapsed = System.nanoTime() - start; // конец
+            System.out.printf("n=%-5d время = %8.3f сек", n, elapsed / 1e9);
+        }
+    }
+
+    static double[][] randomMatrix(int n){
+        double[][] m = new double[n][n];
+        Random r = new Random(1);
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                m[i][j] = r.nextDouble();
+        return m;
+    }
 }
