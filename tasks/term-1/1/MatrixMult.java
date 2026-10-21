@@ -1,9 +1,6 @@
-import java.util.Scanner;
 import java.util.Random;
-import java.util.InputMismatchException;
 
 public class MatrixMult {
-    static Scanner scanner = new Scanner(System.in);
     static Random random = new Random();
 
     static int rows1 = 5;
@@ -85,14 +82,22 @@ public class MatrixMult {
 
     public static double[][] randomFillMatrix(double[][] matr)
     {
-            for (int i = 0; i < matr.length; i++)
+        if(matr.length <= 0)
+        {
+            throw new IllegalArgumentException();
+        }
+        if(matr[0].length <= 0)
+        {
+            throw new IllegalArgumentException();
+        }
+        for (int i = 0; i < matr.length; i++)
+        {
+            for(int j = 0; j < matr[0].length; j++)
             {
-                for(int j = 0; j < matr[0].length; j++)
-                {
-                    matr[i][j] = random.nextDouble() * 10;
-                }
+                matr[i][j] = random.nextDouble() * 10;
             }
-            return matr;
+        }
+        return matr;
     }
     
 
