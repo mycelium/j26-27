@@ -22,9 +22,18 @@ object Main {
   /**
    * Exercise 2 Parentheses Balancing
    */
-//  def balance(chars: List[Char]): Boolean = {
-//
-//  }
+  def balance(chars: List[Char]): Boolean = {
+    def countOpened(chars: List[Char], opened: Int) : Boolean = {
+      (chars, opened) match {
+        case (Nil, _) => if (opened > 0) false else true
+        case ('(' :: xs, op) => countOpened(xs, op+1)
+        case (')' :: xs, op) => if (op == 0) false else countOpened(xs, op-1)
+        case (x :: xs, op) => countOpened(xs, op)
+      }
+    }
+
+    countOpened(chars, 0)
+  }
 
   /**
    * Exercise 3 Counting Change
