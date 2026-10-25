@@ -37,8 +37,12 @@ public class WordFrequencyCounter {
         WordFrequencyCounter counter = new WordFrequencyCounter();
         Path filePath = Path.of(args[0]);
 
-        Map<String, Integer> frequencies = counter.countWords(filePath);
-        counter.printFrequencies(frequencies);
+        try {
+            Map<String, Integer> frequencies = counter.countWords(filePath);
+            counter.printFrequencies(frequencies);
+        } catch (IOException e) {
+            System.out.println("Error while working with the file: " + filePath);
+        }
     }
 }
 
