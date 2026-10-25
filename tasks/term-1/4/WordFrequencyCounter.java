@@ -27,7 +27,16 @@ public class WordFrequencyCounter {
     }
 
     public static void main(String[] args) {
-        // run word frequency counter
+        if (args.length == 0) {
+            System.out.println("Please provide a file path to count words.")
+            return;
+        }
+
+        WordFrequencyCounter counter = new WordFrequencyCounter();
+        Path filePath = Path.of(args[0]);
+
+        Map<String, Integer> frequencies = counter.countWords(filePath);
+        counter.printFrequencies(frequencies);
     }
 }
 
