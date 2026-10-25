@@ -18,7 +18,12 @@ public class WordFrequencyCounter {
 
 
     public void printFrequencies(Map<String, Integer> frequencies) {
-        // print word counts
+        System.out.println("Word: frequency (times):");
+        int count = 0;
+        for (Map.Entry<String, Integer> entry : frequencies.entrySet()) {
+            count += 1;
+            System.out.println(count + ". " + entry.getKey() + ": " + entry.getValue() + " times");
+        }
     }
 
     public static void main(String[] args) {
