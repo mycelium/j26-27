@@ -20,18 +20,39 @@ public class MatrixMult {
         return result;
     }
 
+    public static double[][] CreateDefaultMatrix(int rows, int cols) {
+        double matrix[][] = new double[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j] = i * cols + j;
+            }
+        }
+
+        return matrix;
+    }
+
     public static void main(String[] args) {
-        double[][] firstMatrix = {
-                { 1, 2 },
-                { 3, 4 }
-        };
+        int[] sizes = { 300, 500, 700 };
 
-        double[][] secondMatrix = {
-            {5, 6},
-            {7, 8}
-        };
+        for (int n : sizes) {
+            double[][] firstMatrix = CreateDefaultMatrix(n, n);
+            double[][] secondMatrix = CreateDefaultMatrix(n, n);
 
-        double[][] multiplyResult = multiply(firstMatrix, secondMatrix);
-        System.out.println(java.util.Arrays.deepToString(multiplyResult));
+            long totalNanos = 0;
+            double result[][] = null;
+
+            for (int i = 0; i < 3; i++)
+            {
+                long start = System.nanoTime();
+                result = multiply(firstMatrix, secondMatrix);
+                totalNanos += System.nanoTime() - start;
+            }
+
+            double averageTime = totalNanos / 3.0 / 1000000.0;
+
+            System.out.printf("%dx%d: среднее время %.3f мс.%n",
+                n, n, averageTime);
+        }
     }
 }
