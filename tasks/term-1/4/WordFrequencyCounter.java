@@ -1,5 +1,7 @@
 import java.util.*;
 import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
 
 public class WordFrequencyCounter {
 
