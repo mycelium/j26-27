@@ -1,4 +1,4 @@
-package recfun
+//package recfun
 //import common._
 
 object Main {
@@ -42,9 +42,12 @@ object Main {
    * there is 1 way to give change for 5 if you have coins with denomiation
    * 2 and 3: 2+3.
    */
-//  def countChange(money: Int, coins: List[Int]): Int = {
-//
-//  }
+  def countChange(money: Int, coins: List[Int]): Int = {
+    if (money == 0) 1
+    else if (money < 0 || coins.isEmpty) 0
+    else countChange(money - coins.head, coins) + countChange(money, coins.tail)
+  }
+}
   
   /**
    * Excerice 4 N-Queens Problem
