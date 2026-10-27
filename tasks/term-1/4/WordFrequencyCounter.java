@@ -1,7 +1,8 @@
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
+import java.io.BufferedReader;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,11 +26,23 @@ public class WordFrequencyCounter {
         return frequencies;
     }
 
+    public Map<String, Integer> countWordsStreaming(Path filePath) throws IOException {
+        Map<String, Integer> frequencies = new HashMap<>();
+        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                countToMap(line, frequencies);
+            }
+        }
+        return frequencies;
+    }
+
     public void printFrequencies(Map<String, Integer> frequencies)  {
         frequencies.entrySet().stream() // формируем пары (key, value) и пихаем в поток для сортировки
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
                         .thenComparing(Map.Entry.comparingByKey()))
                 .forEach(element -> System.out.println(element.getKey() + ": " + element.getValue()));
+        System.out.println();
     }
 
     public static void main(String[] args) {
@@ -40,8 +53,11 @@ public class WordFrequencyCounter {
             System.out.println(String.format("Reading path: %s", path));
 
             try {
-                System.out.println("Full load:");
+                System.out.println("Full load:\n");
                 counter.printFrequencies(counter.countWords(path));
+
+                System.out.println("Streaming:\n");
+                counter.printFrequencies(counter.countWordsStreaming(path));
 
             } catch (NoSuchFileException e) {
                 System.err.println("File not found: " + e.getFile());
