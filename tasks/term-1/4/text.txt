@@ -1,0 +1,3 @@
+   Hello, world! Hello Java.
+Привет, мир! Привет, Java; привет-привет.
+Don't stop: the end, the END.
