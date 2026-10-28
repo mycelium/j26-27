@@ -19,16 +19,16 @@ object Main {
    * Exercise 1
    */
   def pascal(c: Int, r: Int): Int = {
-    if (c == 1 || c == r) 1
-    else pascal (r - 1, c - 1) + pascal (r - 1, c)
+    if (c == 0 || c == r) 1
+    else pascal (c - 1, r - 1) + pascal (c, r - 1)
   }
 
   /**
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-    var charList: List[Char] = List('(', ')')
-    var openingChars: List[Char] = List('(')
+    val charList: List[Char] = List('(', ')')
+    val openingChars: List[Char] = List('(')
     val stack = Stack[Char]()
 
     for (char <- chars){
@@ -68,7 +68,12 @@ object Main {
    * 2 and 3: 2+3.
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-
+    if (money < 0) 0
+    else if (money == 0) 1
+    else if (coins.isEmpty) 0
+    else {
+       countChange(money, coins.tail)  + countChange(money - coins.head, coins)
+    }
   }
   
   /**
@@ -84,7 +89,37 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
+    val board = Array.fill(size, size)(0)
 
+    def isSafe(row: Int, col: Int) : Boolean = {
+      (0 until col).forall{i =>
+        val rowSafe = board(row)(i) == 0
+        val upperDiagSafe = if (row - (col - i) >= 0) board(row - (col-i))(i) == 0 else true
+        val lowerDiagSafe = if (row + (col - i) < board.length) board(row + (col - i))(i) == 0 else true
+
+        rowSafe && upperDiagSafe && lowerDiagSafe
+        }
   }
+    def backtrack(col: Int) : Boolean ={
+      if (col >= size) return true
 
+      for (row <- 0 until size){
+        if (isSafe(row, col)) {
+          board(row)(col) = 1 
+          if (backtrack(col + 1)) return true
+          board(row)(col) = 0
+        }
+      }
+      false
+    }
+
+    if (!backtrack(0)){
+      println(s"Solution does not exist for N = $size")
+      None
+    }
+    else{
+      val result = (0 until size).map(row => board(row).indexOf(1)).toArray
+      Some(result)
+    }
+  }
 }
