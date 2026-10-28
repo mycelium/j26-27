@@ -1,28 +1,63 @@
 package recfun
 import common._
+import scala.collection.mutable.Stack
+import scala.io.StdIn.readLine
 
 object Main {
-  def main(args: Array[String]) {
+  def main(args: Array[String]) = {
     println("Pascal's Triangle")
     for (row <- 0 to 10) {
       for (col <- 0 to row)
         print(pascal(col, row) + " ")
       println()
     }
+    //val chars = readLine("Enter a string to compute the balance: ")
+
   }
 
   /**
    * Exercise 1
    */
   def pascal(c: Int, r: Int): Int = {
-
+    if (c == 1 || c == r) 1
+    else pascal (r - 1, c - 1) + pascal (r - 1, c)
   }
 
   /**
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-   
+    var charList: List[Char] = List('(', ')')
+    var openingChars: List[Char] = List('(')
+    val stack = Stack[Char]()
+
+    for (char <- chars){
+        if (charList.contains(char)){
+            if (openingChars.contains(char)){
+              stack.push(char)
+            }
+            else {
+              if (stack.nonEmpty){
+                stack.pop()
+              }
+              else{
+                println(s"Parentheses are unbalanced, add 1 left parenthesis")
+                return false
+              }
+            }
+        }
+    }
+    val isBalanced = stack.isEmpty
+    if (isBalanced){
+      println("Parentheses are balanced")
+    } 
+    else{
+      val count = stack.size
+      val plural = if (count == 1) "parenthesis" else "parentheses"
+      println(s"Parentheses are unbalanced, add $count right $plural")
+    }
+
+    isBalanced
   }
 
   /**
