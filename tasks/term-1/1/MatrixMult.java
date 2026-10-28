@@ -9,6 +9,7 @@ public class MatrixMult{
     if (columnsA != rowsB){
         throw new IllegalArgumentException("Матрицы нельзя перемножить");
     }
+    
     double[][] result = new double[rowsA][columnsB];
     for (int i = 0; i < rowsA; i++){
         for (int k = 0; k < columnsA; k++){
