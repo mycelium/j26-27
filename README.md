@@ -1,7 +1,7 @@
 # Java lessons and tasks 2025-2026
 
 Group: All Groups
-Name: A.Lukashin
+Name: E.Denisenko
 
 ## Git task
 
