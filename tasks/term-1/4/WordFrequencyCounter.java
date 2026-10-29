@@ -57,7 +57,7 @@ public class WordFrequencyCounter {
     }
 
     public static List<String> tokenize(String text){
-        String[] words = text.split("\\P{L}+");
+        String[] words = text.split("[^\\p{L}'-]+");  
         List<String> new_words = new ArrayList<>(); 
         for(String w: words){
             if(w.isEmpty()) continue;
