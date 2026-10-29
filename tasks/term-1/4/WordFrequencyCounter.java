@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public class WordFrequencyCounter {
 
-    public Map<String, Integer> countWords(Path filePath) throws IOException {  // был нестатисечкий метод
+    public Map<String, Integer> countWords(Path filePath) throws IOException {
         // read file, tokenize words, update map
         String text = Files.readString(filePath);
         List<String> words = tokenize(text);
@@ -23,10 +23,35 @@ public class WordFrequencyCounter {
         return counts;
     }
 
-    public void printFrequencies(Map<String, Integer> frequencies) {  // был нестатисечкий метод
+    public void printFrequencies(Map<String, Integer> frequencies, int limit) { 
         // print word counts
-        for(Map.Entry<String, Integer> e : frequencies.entrySet()){
+
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(frequencies.entrySet());
+        
+        /* entries.sort((a, b) -> Integer.compare(b.getValue(), a.getValue())); */
+
+        entries.sort((a, b) -> {
+            int c = Integer.compare(b.getValue(), a.getValue());
+            if(c != 0) return c;
+            return a.getKey().compareTo(b.getKey());
+        });
+
+        /* for(Map.Entry<String, Integer> e : frequencies.entrySet()){
             System.out.println(e.getKey() + ": " + e.getValue());
+        } */
+
+        int total = 0;
+        for(int c: frequencies.values()) total += c;
+
+        System.out.println("Всего слов: " + total + "; Уникальных: " + frequencies.size());
+
+        int letLimit = Math.min(limit, frequencies.size());
+
+        System.out.println("First " + letLimit + " words");
+
+        for(int i = 0; i < letLimit; ++i){
+            Map.Entry<String, Integer> e = entries.get(i);
+            System.out.printf("%-20s %d%n", e.getKey(), e.getValue());
         }
         
     }
@@ -42,18 +67,20 @@ public class WordFrequencyCounter {
         return new_words;
     }
 
+
     public static void main(String[] args) {
         // run word frequency counter
         if(args.length == 0){
-            System.err.println("Ошибка: введите параметр командной строки!");
+            System.err.println("Ошибка: введите параметры командной строки!");
             System.exit(1);
         }
         WordFrequencyCounter counter = new WordFrequencyCounter();
         try{
             Path p = Path.of(args[0]);
             Path path = p.toAbsolutePath();    
-            Map<String, Integer> cnts = counter.countWords(path);      
-            counter.printFrequencies(cnts);
+            Map<String, Integer> cnts = counter.countWords(path);
+            int limit = Integer.parseInt(args[1]);      
+            counter.printFrequencies(cnts, limit);
         }
         catch (NoSuchFileException e) {
             System.err.println("Файл не найден: " + e.getMessage());
