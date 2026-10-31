@@ -1,15 +1,46 @@
 public class MatrixMult {
 
 	public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix){
-		if (firstMatrix == null || secondMatrix == null || firstMatrix.length == 0 || secondMatrix.length == 0) {
-			throw new IllegalArgumentException("Matrices must not be null or empty");
-		}
+		checkSizes(firstMatrix, secondMatrix);
 		int n = firstMatrix.length;
 		int m = secondMatrix.length;
 		int p = secondMatrix[0].length;
-		if (firstMatrix[0].length != m) {
-			throw new IllegalArgumentException("Incompatible sizes: " + n + "x" + firstMatrix[0].length + " and " + m + "x" + p);
+
+		// i-k-j order: inner loop walks rows of secondMatrix and result sequentially (cache friendly)
+		double[][] result = new double[n][p];
+		for (int i = 0; i < n; i++) {
+			double[] aRow = firstMatrix[i];
+			double[] resultRow = result[i];
+			for (int k = 0; k < m; k++) {
+				double aik = aRow[k];
+				if (aik == 0) {
+					continue;
+				}
+				double[] bRow = secondMatrix[k];
+				for (int j = 0; j < p; j++) {
+					resultRow[j] += aik * bRow[j];
+				}
+			}
 		}
+		return result;
+	}
+
+	static void checkSizes(double[][] firstMatrix, double[][] secondMatrix) {
+		if (firstMatrix == null || secondMatrix == null || firstMatrix.length == 0 || secondMatrix.length == 0) {
+			throw new IllegalArgumentException("Matrices must not be null or empty");
+		}
+		if (firstMatrix[0].length != secondMatrix.length) {
+			throw new IllegalArgumentException("Incompatible sizes: " + firstMatrix.length + "x" + firstMatrix[0].length
+					+ " and " + secondMatrix.length + "x" + secondMatrix[0].length);
+		}
+	}
+
+	// Straightforward i-j-k version, kept for comparison in the benchmark
+	static double[][] multiplyNaive(double[][] firstMatrix, double[][] secondMatrix) {
+		checkSizes(firstMatrix, secondMatrix);
+		int n = firstMatrix.length;
+		int m = secondMatrix.length;
+		int p = secondMatrix[0].length;
 
 		double[][] result = new double[n][p];
 		for (int i = 0; i < n; i++) {
@@ -36,14 +67,39 @@ public class MatrixMult {
 	}
 
 	public static void main(String[] args) {
+		// warm up JIT
+		double[][] w = randomMatrix(200, 200);
+		for (int i = 0; i < 5; i++) {
+			multiply(w, w);
+			multiplyNaive(w, w);
+		}
+
 		int[] sizes = {500, 1000, 2000};
 		for (int size : sizes) {
 			double[][] a = randomMatrix(size, size);
 			double[][] b = randomMatrix(size, size);
+
 			long start = System.nanoTime();
-			multiply(a, b);
-			long elapsed = System.nanoTime() - start;
-			System.out.printf("%dx%d: %d ms%n", size, size, elapsed / 1_000_000);
+			double[][] naive = multiplyNaive(a, b);
+			long naiveMs = (System.nanoTime() - start) / 1_000_000;
+
+			start = System.nanoTime();
+			double[][] fast = multiply(a, b);
+			long fastMs = (System.nanoTime() - start) / 1_000_000;
+
+			System.out.printf("%dx%d: naive %d ms, optimized %d ms, equal: %b%n",
+					size, size, naiveMs, fastMs, almostEqual(naive, fast));
 		}
+	}
+
+	static boolean almostEqual(double[][] x, double[][] y) {
+		for (int i = 0; i < x.length; i++) {
+			for (int j = 0; j < x[i].length; j++) {
+				if (Math.abs(x[i][j] - y[i][j]) > 1e-9) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
