@@ -3,24 +3,50 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.io.BufferedReader;
 
 public class WordFrequencyCounter {
 
-    public Map<String, Integer> countWords(Path filePath) throws IOException {
+    private void addWords(String text, Map<String, Integer> counts) {
+        for(String w: tokenize(text)){
+            if(counts.containsKey(w)){
+                counts.put(w, counts.get(w) + 1);
+            }
+            else counts.put(w, 1);
+        }
+    }
+
+    public Map<String, Integer> countWordsInMemory(Path filePath) throws IOException {
         // read file, tokenize words, update map
         String text = Files.readString(filePath);
-        List<String> words = tokenize(text);
+//        List<String> words = tokenize(text);
         Map<String, Integer> counts = new HashMap<>();
-        for(String w: words){
+
+        addWords(text, counts);
+
+        /* for(String w: words){
             if(counts.containsKey(w)){
                 counts.put(w, counts.get(w) + 1);
             }
             else{
                 counts.put(w, 1);
             }
-        }
+        } */
         
         return counts;
+    }
+
+    public Map<String, Integer> countWordsStreaming(Path filepath) throws IOException {
+        try (BufferedReader reader = Files.newBufferedReader(filepath)) {
+            Map<String, Integer> counts = new HashMap<>();
+            String line;
+            while((line = reader.readLine()) != null){
+                addWords(line, counts);
+            }
+            
+            return counts;
+        }
+        
     }
 
     public void printFrequencies(Map<String, Integer> frequencies, int limit) { 
@@ -78,7 +104,8 @@ public class WordFrequencyCounter {
         try{
             Path p = Path.of(args[0]);
             Path path = p.toAbsolutePath();    
-            Map<String, Integer> cnts = counter.countWords(path);
+            Map<String, Integer> cnts = counter.countWordsInMemory(path);
+//            Map<String, Integer> cnts = counter.countWordsStreaming(path);
             int limit = Integer.parseInt(args[1]);      
             counter.printFrequencies(cnts, limit);
         }
