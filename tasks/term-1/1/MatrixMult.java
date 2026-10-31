@@ -1,24 +1,33 @@
 public class MatrixMult {
 
+	private static final int BLOCK = 64;
+
 	public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix){
 		checkSizes(firstMatrix, secondMatrix);
 		int n = firstMatrix.length;
 		int m = secondMatrix.length;
 		int p = secondMatrix[0].length;
 
-		// i-k-j order: inner loop walks rows of secondMatrix and result sequentially (cache friendly)
+		// i-k-j order: inner loop walks rows of secondMatrix and result sequentially (cache friendly);
+		// k and j are split into blocks so the used part of secondMatrix stays in CPU cache
 		double[][] result = new double[n][p];
-		for (int i = 0; i < n; i++) {
-			double[] aRow = firstMatrix[i];
-			double[] resultRow = result[i];
-			for (int k = 0; k < m; k++) {
-				double aik = aRow[k];
-				if (aik == 0) {
-					continue;
-				}
-				double[] bRow = secondMatrix[k];
-				for (int j = 0; j < p; j++) {
-					resultRow[j] += aik * bRow[j];
+		for (int kk = 0; kk < m; kk += BLOCK) {
+			int kEnd = Math.min(kk + BLOCK, m);
+			for (int jj = 0; jj < p; jj += BLOCK) {
+				int jEnd = Math.min(jj + BLOCK, p);
+				for (int i = 0; i < n; i++) {
+					double[] aRow = firstMatrix[i];
+					double[] resultRow = result[i];
+					for (int k = kk; k < kEnd; k++) {
+						double aik = aRow[k];
+						if (aik == 0) {
+							continue;
+						}
+						double[] bRow = secondMatrix[k];
+						for (int j = jj; j < jEnd; j++) {
+							resultRow[j] += aik * bRow[j];
+						}
+					}
 				}
 			}
 		}
