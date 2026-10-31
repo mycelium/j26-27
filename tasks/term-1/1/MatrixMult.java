@@ -23,4 +23,27 @@ public class MatrixMult {
 		}
 		return result;
 	}
+
+	static double[][] randomMatrix(int rows, int cols) {
+		java.util.Random random = new java.util.Random(42);
+		double[][] matrix = new double[rows][cols];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				matrix[i][j] = random.nextDouble();
+			}
+		}
+		return matrix;
+	}
+
+	public static void main(String[] args) {
+		int[] sizes = {500, 1000, 2000};
+		for (int size : sizes) {
+			double[][] a = randomMatrix(size, size);
+			double[][] b = randomMatrix(size, size);
+			long start = System.nanoTime();
+			multiply(a, b);
+			long elapsed = System.nanoTime() - start;
+			System.out.printf("%dx%d: %d ms%n", size, size, elapsed / 1_000_000);
+		}
+	}
 }
