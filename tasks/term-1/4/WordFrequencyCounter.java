@@ -23,15 +23,6 @@ public class WordFrequencyCounter {
         Map<String, Integer> counts = new HashMap<>();
 
         addWords(text, counts);
-
-        /* for(String w: words){
-            if(counts.containsKey(w)){
-                counts.put(w, counts.get(w) + 1);
-            }
-            else{
-                counts.put(w, 1);
-            }
-        } */
         
         return counts;
     }
@@ -62,10 +53,6 @@ public class WordFrequencyCounter {
             return a.getKey().compareTo(b.getKey());
         });
 
-        /* for(Map.Entry<String, Integer> e : frequencies.entrySet()){
-            System.out.println(e.getKey() + ": " + e.getValue());
-        } */
-
         int total = 0;
         for(int c: frequencies.values()) total += c;
 
@@ -93,21 +80,48 @@ public class WordFrequencyCounter {
         return new_words;
     }
 
+    private boolean compareModes(WordFrequencyCounter counter, Path path) throws IOException {
+        Map<String, Integer> memory = counter.countWordsInMemory(path);
+        Map<String, Integer> streaming = counter.countWordsStreaming(path);
+        return memory.equals(streaming);
+    }
+
 
     public static void main(String[] args) {
         // run word frequency counter
-        if(args.length == 0){
-            System.err.println("Ошибка: введите параметры командной строки!");
+        if (args.length == 0) {
+            System.err.println("Использование: java WordFrequencyCounter <файл> [memory|stream|compare] [N]");
             System.exit(1);
         }
+
+        String mode = args.length > 1 ? args[1] : "stream";
+        int limit = 25;
+
+        if(args.length > 2){
+            try{
+                limit = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e){
+                System.err.println("N должно быть целым числом: " + args[2]);
+                System.exit(1);
+            }
+        }
+
         WordFrequencyCounter counter = new WordFrequencyCounter();
+
         try{
-            Path p = Path.of(args[0]);
-            Path path = p.toAbsolutePath();    
-            Map<String, Integer> cnts = counter.countWordsInMemory(path);
-//            Map<String, Integer> cnts = counter.countWordsStreaming(path);
-            int limit = Integer.parseInt(args[1]);      
-            counter.printFrequencies(cnts, limit);
+            
+            Path path = Path.of(args[0]).toAbsolutePath();
+
+            switch (mode) {
+                case "memory" -> counter.printFrequencies(counter.countWordsInMemory(path), limit);
+                case "stream" -> counter.printFrequencies(counter.countWordsStreaming(path), limit);
+                case "compare" -> System.out.println("Результаты совпадают: " + counter.compareModes(counter, path));
+                default -> {
+                    System.err.println("Неизвестный режим: " + mode + " (ожидается memory, stream или compare)");
+                    System.exit(1);
+                }
+            }
+            
         }
         catch (NoSuchFileException e) {
             System.err.println("Файл не найден: " + e.getMessage());
