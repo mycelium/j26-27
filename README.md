@@ -1,7 +1,8 @@
 # Java lessons and tasks 2025-2026
 
-Group: All Groups
-Name: A.Lukashin
+Group: 40101
+
+Name: Arkady Kazarov
 
 ## Git task
 
