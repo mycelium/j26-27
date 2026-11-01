@@ -32,6 +32,21 @@ public class WordFrequencyCounter {
         }
     }
 
+    // variant 2: streaming, Scanner reads the file in small chunks and returns one word at a time,
+    // so only the map of unique words is kept in memory
+    public Map<String, Integer> countWordsStreaming(Path filePath) {
+        Map<String, Integer> frequencies = new HashMap<>();
+        try (Scanner scanner = new Scanner(filePath, StandardCharsets.UTF_8)) {
+            scanner.useDelimiter(DELIMITER);
+            while (scanner.hasNext()) {
+                addWord(frequencies, scanner.next());
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return frequencies;
+    }
+
     public void printFrequencies(Map<String, Integer> frequencies) {
         // print word counts
     }
