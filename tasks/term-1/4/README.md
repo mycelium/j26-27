@@ -95,4 +95,3 @@ Both results are the same: true
 
 So streaming is not slower: variant 1 also has to read and copy the whole file first. The time depends on the computer, so the numbers can be different on another one.
 
-I also compared both variants with a simple Python count on a smaller file (800000 words, 5812 different words). The counters were the same for every word.
