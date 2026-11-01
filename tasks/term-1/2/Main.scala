@@ -15,14 +15,21 @@ object Main {
    * Exercise 1
    */
   def pascal(c: Int, r: Int): Int = {
-
+    require(c >= 0 && c <= r, "колонка вне треугольника")
+    if c == 1 || r == 1 || c == r then 1 else pascal(c-1, r-1) + pascal(c, r-1)
   }
 
   /**
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-   
+    @tailrec
+    def go(chars: List[Char], acc: Int): Boolean = chars match
+      case Nil => if acc == 0 then true else false
+      case ('(' :: rest) => go(rest, acc+1)
+      case (')' :: rest) => if acc == 0 then false else go(rest, acc-1)
+      case (_ :: rest) => go(rest, acc)
+    go(chars, 0) 
   }
 
   /**
@@ -53,3 +60,4 @@ object Main {
   }
 
 }
+
