@@ -24,7 +24,17 @@ object Main {
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-   
+    def loop(rest: List[Char], open: Int): Boolean = {
+      if (open < 0) false
+      else rest match {
+        case Nil => open == 0
+        case '(' :: tail => loop(tail, open + 1)
+        case ')' :: tail => loop(tail, open - 1)
+        case _ :: tail => loop(tail, open)
+      }
+    }
+
+    loop(chars, 0)
   }
 
   /**
