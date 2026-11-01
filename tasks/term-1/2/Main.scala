@@ -9,6 +9,15 @@ object Main {
         print(pascal(col, row) + " ")
       println()
     }
+
+    println("Parentheses balancing")
+    println(balance("(a + b)".toList))
+
+    println("Counting change")
+    println(countChange(5, List(1, 2, 5)))
+
+    println("N-Queens")
+    nQueens(4).foreach(solution => printBoard(solution))
   }
 
   /**
