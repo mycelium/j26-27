@@ -11,7 +11,16 @@ object Main {
         print(pascal(col, row) + " ")
       println()
     }
-    //val chars = readLine("Enter a string to compute the balance: ")
+
+    println("\nParentheses Balancing")
+    println(balance(List('(', '(', ')', ')')))
+    println(balance(List('(', ')', ')')))
+
+    println("\nCounting Change")
+    println(countChange(5, List(2, 3)))
+
+    println("\nN-Queens")
+    println(nQueens(4).map(_.mkString("[", ", ", "]")))
 
   }
 
@@ -27,37 +36,23 @@ object Main {
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-    val charList: List[Char] = List('(', ')')
-    val openingChars: List[Char] = List('(')
     val stack = Stack[Char]()
 
-    for (char <- chars){
-        if (charList.contains(char)){
-            if (openingChars.contains(char)){
-              stack.push(char)
-            }
-            else {
-              if (stack.nonEmpty){
-                stack.pop()
-              }
-              else{
-                println(s"Parentheses are unbalanced, add 1 left parenthesis")
-                return false
-              }
-            }
+    for (char <- chars) {
+      if (char == '(') {
+        stack.push(char)
+      }
+      else if (char == ')') {
+        if (stack.nonEmpty) {
+          stack.pop()
         }
-    }
-    val isBalanced = stack.isEmpty
-    if (isBalanced){
-      println("Parentheses are balanced")
-    } 
-    else{
-      val count = stack.size
-      val plural = if (count == 1) "parenthesis" else "parentheses"
-      println(s"Parentheses are unbalanced, add $count right $plural")
+        else {
+          return false
+        }
+      }
     }
 
-    isBalanced
+    stack.isEmpty
   }
 
   /**
@@ -89,37 +84,54 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
-    val board = Array.fill(size, size)(0)
-
-    def isSafe(row: Int, col: Int) : Boolean = {
-      (0 until col).forall{i =>
-        val rowSafe = board(row)(i) == 0
-        val upperDiagSafe = if (row - (col - i) >= 0) board(row - (col-i))(i) == 0 else true
-        val lowerDiagSafe = if (row + (col - i) < board.length) board(row + (col - i))(i) == 0 else true
-
-        rowSafe && upperDiagSafe && lowerDiagSafe
-        }
-  }
-    def backtrack(col: Int) : Boolean ={
-      if (col >= size) return true
-
-      for (row <- 0 until size){
-        if (isSafe(row, col)) {
-          board(row)(col) = 1 
-          if (backtrack(col + 1)) return true
-          board(row)(col) = 0
-        }
-      }
-      false
-    }
-
-    if (!backtrack(0)){
-      println(s"Solution does not exist for N = $size")
+    if (size <= 0) {
       None
     }
-    else{
-      val result = (0 until size).map(row => board(row).indexOf(1)).toArray
-      Some(result)
+    else {
+      val board = Array.fill(size, size)(0)
+
+      def isSafe(row: Int, col: Int): Boolean = {
+        (0 until col).forall { i =>
+          val rowSafe = board(row)(i) == 0
+          val upperDiagSafe =
+            if (row - (col - i) >= 0)
+              board(row - (col - i))(i) == 0
+            else true
+
+          val lowerDiagSafe =
+            if (row + (col - i) < board.length)
+              board(row + (col - i))(i) == 0
+            else true
+
+          rowSafe && upperDiagSafe && lowerDiagSafe
+        }
+      }
+
+      def backtrack(col: Int): Boolean = {
+        if (col >= size) return true
+
+        for (row <- 0 until size) {
+          if (isSafe(row, col)) {
+            board(row)(col) = 1
+
+            if (backtrack(col + 1)) return true
+
+            board(row)(col) = 0
+          }
+        }
+        false
+      }
+
+      if (!backtrack(0)) {
+        None
+      }
+      else {
+        val result = (0 until size)
+          .map(row => board(row).indexOf(1))
+          .toArray
+
+        Some(result)
+      }
     }
   }
 }
