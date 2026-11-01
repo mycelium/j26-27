@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class MatrixMult {
 
 	public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix) throws ArithmeticException {
@@ -17,6 +19,34 @@ public class MatrixMult {
 			for (int j = 0; j < resCols; ++j) {
 				for (int r = 0; r < m; ++r) {
 					resMatrix[i][j] += firstMatrix[i][r] * secondMatrix[r][j];
+				}
+			}
+		}
+
+		return resMatrix;
+	}
+
+	public static double[][] multiplyOptimized(double[][] firstMatrix, double[][] secondMatrix) throws ArithmeticException {
+		if (!areCompatible(firstMatrix, secondMatrix)) {
+			throw new ArithmeticException(
+				"Matrices " + getStrDimention(firstMatrix) + " and " + getStrDimention(secondMatrix) + " are not compatible"
+			);
+		}
+
+		int resRows = rows(firstMatrix);
+		int resCols = cols(secondMatrix);
+		double[][] resMatrix = new double[resRows][resCols];
+
+		int m = rows(secondMatrix); // столбцов в первой, строк во второй
+
+		for (int i = 0; i < resRows; ++i) {
+			double[] aRow = firstMatrix[i];
+			double[] resRow = resMatrix[i];
+			for (int r = 0; r < resCols; ++r) {
+				double air = aRow[r];
+				double[] bRow = secondMatrix[r];
+				for (int j = 0; j < m; ++j) {
+					resRow[j] += air * bRow[j];
 				}
 			}
 		}
@@ -57,6 +87,52 @@ public class MatrixMult {
 
 	private static String getStrDimention(double[][] matrix) {
 		return "(" + rows(matrix) + "X" + cols(matrix) + ")";
+	}
+
+	private static double[][] randomMatrix(int size, Random random) {
+        double[][] matrix = new double[size][size];
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < size; ++j) {
+                matrix[i][j] = random.nextDouble();
+            }
+        }
+        return matrix;
+    }
+
+	private static double measureMultiplyMillis(double[][] firstMatrix, double[][] secondMatrix, boolean optimized) {
+        long start = System.nanoTime();
+        var _ = optimized ? multiplyOptimized(firstMatrix, secondMatrix) : multiply(firstMatrix, secondMatrix);
+        long elapsed = System.nanoTime() - start;
+        return elapsed / 1_000_000.0;
+    }
+
+	private static void warmup(double[][] firstMatrix, double[][]secondMatrix) {
+		int n_warmups = 20;
+		for (int i = 0; i < n_warmups; ++i) {
+			measureMultiplyMillis(firstMatrix, secondMatrix, false);
+			measureMultiplyMillis(firstMatrix, secondMatrix, true);
+		}
+	}
+
+	public static void main(String[] args) {
+		Random random = new Random(67);
+
+		for (int size : new int[]{250, 500, 750})
+		{
+			double[][] A = randomMatrix(size, random);
+			double[][] B = randomMatrix(size, random);
+
+			warmup(A, B);
+
+			double elapsedBasic = measureMultiplyMillis(A, B, false);
+			double elapsedOptimized = measureMultiplyMillis(A, B, true);
+			double speedup = elapsedBasic / elapsedOptimized;
+
+			System.out.printf("%-22s %15s%n", "Size:", getStrDimention(A));
+			System.out.printf("%-22s %12.3f ms%n", "Basic realization:", elapsedBasic);
+			System.out.printf("%-22s %12.3f ms%n", "Optimized realization:", elapsedOptimized);
+			System.out.printf("%-22s %12.2f%n%n", "Speedup:", speedup);
+		}
 	}
 }
 
