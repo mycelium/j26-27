@@ -1,0 +1,27 @@
+{
+  "name": "scala",
+  "argv": [
+    "/Users/irinapesehonova/Library/Caches/Coursier/arc/https/github.com/scala/scala3/releases/download/3.10.0/scala3-3.10.0-aarch64-apple-darwin.tar.gz/scala3-3.10.0-aarch64-apple-darwin/libexec/scala-cli",
+    "--cli-default-scala-version",
+    "3.10.0",
+    "--repository",
+    "file:///Users/irinapesehonova/Library/Caches/Coursier/arc/https/github.com/scala/scala3/releases/download/3.10.0/scala3-3.10.0-aarch64-apple-darwin.tar.gz/scala3-3.10.0-aarch64-apple-darwin/maven2",
+    "--prog-name",
+    "scala",
+    "--skip-cli-updates",
+    "bsp",
+    "--json-options",
+    "/Users/irinapesehonova/Desktop/Учёба 5 сем/j26-27/tasks/term-1/3/src/main/scala/.scala-build/ide-options-v2.json",
+    "--json-launcher-options",
+    "/Users/irinapesehonova/Desktop/Учёба 5 сем/j26-27/tasks/term-1/3/src/main/scala/.scala-build/ide-launcher-options.json",
+    "--envs-file",
+    "/Users/irinapesehonova/Desktop/Учёба 5 сем/j26-27/tasks/term-1/3/src/main/scala/.scala-build/ide-envs.json",
+    "/Users/irinapesehonova/Desktop/Учёба 5 сем/j26-27/tasks/term-1/3/src/main/scala"
+  ],
+  "version": "1.17.1",
+  "bspVersion": "2.1.1",
+  "languages": [
+    "scala",
+    "java"
+  ]
+}
