@@ -48,10 +48,32 @@ public class WordFrequencyCounter {
     }
 
     public void printFrequencies(Map<String, Integer> frequencies) {
-        // print word counts
+        // most frequent words first, equal counts in alphabetical order
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(frequencies.entrySet());
+        entries.sort(Map.Entry.<String, Integer>comparingByValue().reversed()
+                .thenComparing(Map.Entry.comparingByKey()));
+        for (Map.Entry<String, Integer> entry : entries) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+        System.out.println("Unique words: " + frequencies.size());
     }
 
     public static void main(String[] args) {
-        // run word frequency counter
+        if (args.length < 1) {
+            System.out.println("Usage: java WordFrequencyCounter <file> [full|stream]");
+            return;
+        }
+        Path filePath = Path.of(args[0]);
+        String mode = args.length > 1 ? args[1] : "stream";
+
+        WordFrequencyCounter counter = new WordFrequencyCounter();
+        long start = System.nanoTime();
+        Map<String, Integer> frequencies = mode.equals("full")
+                ? counter.countWords(filePath)
+                : counter.countWordsStreaming(filePath);
+        long elapsed = (System.nanoTime() - start) / 1_000_000;
+
+        counter.printFrequencies(frequencies);
+        System.out.println("Mode: " + mode + ", time: " + elapsed + " ms");
     }
 }
