@@ -1,5 +1,5 @@
 package recfun
-import common._
+import scala.annotation.tailrec
 
 object Main {
   def main(args: Array[String]) {
@@ -9,20 +9,59 @@ object Main {
         print(pascal(col, row) + " ")
       println()
     }
+
+    println("\nParentheses Balancing")
+    println(s"(a + b) * (c - d): ${balance("(a + b) * (c - d)".toList)}")
+    println(s"())(: ${balance("())(".toList)}")
+
+    println("\nCounting Change")
+    println(s"5 with coins 2 and 3: ${countChange(5, List(2, 3))}")
+
+    println("\nN-Queens")
+    nQueens(4) match {
+      case Some(solution) =>
+        println(solution.mkString("[", ", ", "]"))
+        printBoard(solution)
+      case None =>
+        println("Решение не найдено")
+    }
   }
 
   /**
    * Exercise 1
    */
   def pascal(c: Int, r: Int): Int = {
-
+    (c, r) match {
+      case (column, row) if column < 0 || row < 0 || column > row =>
+        0
+      case (column, row) if column == 0 || column == row =>
+        1
+      case (column, row) =>
+        pascal(column - 1, row - 1) + pascal(column, row - 1)
+    }
   }
 
   /**
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-   
+    @tailrec
+    def loop(remaining: List[Char], opened: Int): Boolean = {
+      remaining match {
+        case Nil =>
+          opened == 0
+        case '(' :: tail =>
+          loop(tail, opened + 1)
+        case ')' :: _ if opened == 0 =>
+          false
+        case ')' :: tail =>
+          loop(tail, opened - 1)
+        case _ :: tail =>
+          loop(tail, opened)
+      }
+    }
+
+    loop(chars, 0)
   }
 
   /**
@@ -33,7 +72,18 @@ object Main {
    * 2 and 3: 2+3.
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-
+    (money, coins) match {
+      case (0, _) =>
+        1
+      case (amount, _) if amount < 0 =>
+        0
+      case (_, Nil) =>
+        0
+      case (amount, coin :: tail) if coin <= 0 =>
+        countChange(amount, tail)
+      case (amount, coin :: tail) =>
+        countChange(amount, tail) + countChange(amount - coin, coin :: tail)
+    }
   }
   
   /**
@@ -49,7 +99,60 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
+    def isSafe(column: Int, placedQueens: List[Int]): Boolean = {
+      @tailrec
+      def check(queens: List[Int], rowDistance: Int): Boolean = {
+        queens match {
+          case Nil =>
+            true
+          case placedColumn :: _
+              if column == placedColumn || Math.abs(column - placedColumn) == rowDistance =>
+            false
+          case _ :: tail =>
+            check(tail, rowDistance + 1)
+        }
+      }
 
+      check(placedQueens, 1)
+    }
+
+    def placeQueens(row: Int, placedQueens: List[Int]): Option[List[Int]] = {
+      if (row == size) {
+        Some(placedQueens.reverse)
+      } else {
+        def tryColumn(column: Int): Option[List[Int]] = {
+          if (column == size) {
+            None
+          } else if (!isSafe(column, placedQueens)) {
+            tryColumn(column + 1)
+          } else {
+            placeQueens(row + 1, column :: placedQueens) match {
+              case solution @ Some(_) =>
+                solution
+              case None =>
+                tryColumn(column + 1)
+            }
+          }
+        }
+
+        tryColumn(0)
+      }
+    }
+
+    if (size < 0) {
+      None
+    } else {
+      placeQueens(0, Nil).map(_.toArray)
+    }
+  }
+
+  def printBoard(solution: Array[Int]): Unit = {
+    val size = solution.length
+    solution.foreach { queenColumn =>
+      println((0 until size).map { column =>
+        if (column == queenColumn) 1 else 0
+      }.mkString(" "))
+    }
   }
 
 }
