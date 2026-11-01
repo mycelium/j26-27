@@ -23,7 +23,13 @@ object Main {
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-   
+    def loop(chars: List[Char], open: Int): Boolean = {
+      if (chars.isEmpty) open == 0
+      else if (chars.head == '(') loop(chars.tail, open + 1)
+      else if (chars.head == ')') open > 0 && loop(chars.tail, open - 1)
+      else loop(chars.tail, open)
+    }
+    loop(chars, 0)
   }
 
   /**
