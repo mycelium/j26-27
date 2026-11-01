@@ -13,20 +13,20 @@ public class MatrixMult {
     }
 
     public static double[][] multiplyClassic(double[][] firstMatrix, double[][] secondMatrix) {
-        int firstColumns = columnCount(firstMatrix, "Первая матрица");
-        int secondColumns = columnCount(secondMatrix, "Вторая матрица");
+        int sharedDimension = columnCount(firstMatrix, "Первая матрица");
+        int resultColumns = columnCount(secondMatrix, "Вторая матрица");
 
-        if (firstColumns != secondMatrix.length) {
+        if (sharedDimension != secondMatrix.length) {
             throw new IllegalArgumentException(
                     "Количество столбцов первой матрицы должно совпадать с количеством строк второй");
         }
 
-        double[][] result = new double[firstMatrix.length][secondColumns];
+        double[][] result = new double[firstMatrix.length][resultColumns];
 
         for (int i = 0; i < firstMatrix.length; i++) {
-            for (int j = 0; j < secondColumns; j++) {
-                double sum = 0.0;
-                for (int k = 0; k < firstColumns; k++) {
+            for (int j = 0; j < resultColumns; j++) {
+                double sum = 0;
+                for (int k = 0; k < sharedDimension; k++) {
                     sum += firstMatrix[i][k] * secondMatrix[k][j];
                 }
                 result[i][j] = sum;
@@ -37,28 +37,28 @@ public class MatrixMult {
     }
 
     public static double[][] multiplyTransposed(double[][] firstMatrix, double[][] secondMatrix) {
-        int firstColumns = columnCount(firstMatrix, "Первая матрица");
-        int secondColumns = columnCount(secondMatrix, "Вторая матрица");
+        int sharedDimension = columnCount(firstMatrix, "Первая матрица");
+        int resultColumns = columnCount(secondMatrix, "Вторая матрица");
 
-        if (firstColumns != secondMatrix.length) {
+        if (sharedDimension != secondMatrix.length) {
             throw new IllegalArgumentException(
                     "Количество столбцов первой матрицы должно совпадать с количеством строк второй");
         }
 
-        double[][] transposed = new double[secondColumns][secondMatrix.length];
+        double[][] transposed = new double[resultColumns][secondMatrix.length];
         for (int i = 0; i < secondMatrix.length; i++) {
-            for (int j = 0; j < secondColumns; j++) {
+            for (int j = 0; j < resultColumns; j++) {
                 transposed[j][i] = secondMatrix[i][j];
             }
         }
 
-        double[][] result = new double[firstMatrix.length][secondColumns];
+        double[][] result = new double[firstMatrix.length][resultColumns];
         for (int i = 0; i < firstMatrix.length; i++) {
             double[] firstRow = firstMatrix[i];
-            for (int j = 0; j < secondColumns; j++) {
+            for (int j = 0; j < resultColumns; j++) {
                 double[] secondRow = transposed[j];
                 double sum = 0;
-                for (int k = 0; k < firstColumns; k++) {
+                for (int k = 0; k < sharedDimension; k++) {
                     sum += firstRow[k] * secondRow[k];
                 }
                 result[i][j] = sum;
@@ -69,22 +69,22 @@ public class MatrixMult {
     }
 
     public static double[][] multiplyOptimized(double[][] firstMatrix, double[][] secondMatrix) {
-        int firstColumns = columnCount(firstMatrix, "Первая матрица");
-        int secondColumns = columnCount(secondMatrix, "Вторая матрица");
+        int sharedDimension = columnCount(firstMatrix, "Первая матрица");
+        int resultColumns = columnCount(secondMatrix, "Вторая матрица");
 
-        if (firstColumns != secondMatrix.length) {
+        if (sharedDimension != secondMatrix.length) {
             throw new IllegalArgumentException(
                     "Количество столбцов первой матрицы должно совпадать с количеством строк второй");
         }
 
-        double[][] result = new double[firstMatrix.length][secondColumns];
+        double[][] result = new double[firstMatrix.length][resultColumns];
         for (int i = 0; i < firstMatrix.length; i++) {
             double[] firstRow = firstMatrix[i];
             double[] resultRow = result[i];
-            for (int k = 0; k < firstColumns; k++) {
+            for (int k = 0; k < sharedDimension; k++) {
                 double firstValue = firstRow[k];
                 double[] secondRow = secondMatrix[k];
-                for (int j = 0; j < secondColumns; j++) {
+                for (int j = 0; j < resultColumns; j++) {
                     resultRow[j] += firstValue * secondRow[j];
                 }
             }
@@ -148,7 +148,7 @@ public class MatrixMult {
     // Прогрев запускает JIT-компиляцию до начала измерений
     // Подробнее: https://wiki.openjdk.org/display/HotSpot/MicroBenchmarks
     private static void warmUp(MatrixMultiplier... multipliers) {
-        Random random = new Random(1L);
+        Random random = new Random(1);
         double[][] firstMatrix = randomMatrix(128, 128, random);
         double[][] secondMatrix = randomMatrix(128, 128, random);
         for (MatrixMultiplier multiplier : multipliers) {
@@ -162,35 +162,35 @@ public class MatrixMult {
             MatrixMultiplier multiplier,
             double[][] firstMatrix,
             double[][] secondMatrix,
-            int runs) {
-        long[] elapsedTimes = new long[runs];
-        double controlValue = 0;
+            int runCount) {
+        long[] elapsedNanos = new long[runCount];
+        double checksum = 0;
 
-        for (int i = 0; i < runs; i++) {
-            long startedAt = System.nanoTime();
+        for (int i = 0; i < runCount; i++) {
+            long startNanos = System.nanoTime();
             double[][] result = multiplier.multiply(firstMatrix, secondMatrix);
-            elapsedTimes[i] = System.nanoTime() - startedAt;
-            controlValue += result[0][0];
+            elapsedNanos[i] = System.nanoTime() - startNanos;
+            checksum += result[0][0];
         }
 
-        if (!Double.isFinite(controlValue)) {
+        if (!Double.isFinite(checksum)) {
             throw new AssertionError("Метод умножения матриц вернул некорректное значение");
         }
 
-        Arrays.sort(elapsedTimes);
-        if (runs % 2 == 1) {
-            return elapsedTimes[runs / 2] / 1_000_000.0;
+        Arrays.sort(elapsedNanos);
+        if (runCount % 2 == 1) {
+            return elapsedNanos[runCount / 2] / 1_000_000.0;
         }
-        return (elapsedTimes[runs / 2 - 1] + elapsedTimes[runs / 2]) / 2_000_000.0;
+        return (elapsedNanos[runCount / 2 - 1] + elapsedNanos[runCount / 2]) / 2_000_000.0;
     }
 
     public static void main(String[] args) {
-        int size = args.length == 0 ? 1_000 : Integer.parseInt(args[0]);
-        int runs = args.length < 2 ? 5 : Integer.parseInt(args[1]);
-        if (size <= 0) {
+        int matrixSize = args.length == 0 ? 1_000 : Integer.parseInt(args[0]);
+        int runCount = args.length < 2 ? 5 : Integer.parseInt(args[1]);
+        if (matrixSize <= 0) {
             throw new IllegalArgumentException("Размер матрицы должен быть положительным");
         }
-        if (runs <= 0) {
+        if (runCount <= 0) {
             throw new IllegalArgumentException("Количество запусков должно быть положительным");
         }
 
@@ -202,19 +202,19 @@ public class MatrixMult {
                 MatrixMult::multiplyTransposed,
                 MatrixMult::multiplyOptimized);
 
-        Random random = new Random(42L);
-        double[][] firstMatrix = randomMatrix(size, size, random);
-        double[][] secondMatrix = randomMatrix(size, size, random);
+        Random random = new Random(42);
+        double[][] firstMatrix = randomMatrix(matrixSize, matrixSize, random);
+        double[][] secondMatrix = randomMatrix(matrixSize, matrixSize, random);
 
         double classicMillis = measureMedianMillis(
-                MatrixMult::multiplyClassic, firstMatrix, secondMatrix, runs);
+                MatrixMult::multiplyClassic, firstMatrix, secondMatrix, runCount);
         double transposedMillis = measureMedianMillis(
-                MatrixMult::multiplyTransposed, firstMatrix, secondMatrix, runs);
+                MatrixMult::multiplyTransposed, firstMatrix, secondMatrix, runCount);
         double optimizedMillis = measureMedianMillis(
-                MatrixMult::multiplyOptimized, firstMatrix, secondMatrix, runs);
+                MatrixMult::multiplyOptimized, firstMatrix, secondMatrix, runCount);
 
-        System.out.printf("Размер матриц: %d x %d%n", size, size);
-        System.out.printf("Количество запусков: %d%n", runs);
+        System.out.printf("Размер матриц: %d x %d%n", matrixSize, matrixSize);
+        System.out.printf("Количество запусков: %d%n", runCount);
         System.out.printf("Классический i-j-k:  %10.3f мс | ускорение 1.00x%n", classicMillis);
         System.out.printf(
                 "Транспонирование:      %10.3f мс | ускорение %.2fx%n",
