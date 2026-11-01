@@ -58,7 +58,38 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
+    // queens - columns of already placed queens, the last placed row goes first
+    def isSafe(queens: List[Int], col: Int): Boolean = {
+      queens.zipWithIndex.forall { case (q, i) =>
+        q != col && math.abs(q - col) != i + 1
+      }
+    }
 
+    def place(row: Int, queens: List[Int]): Option[List[Int]] = {
+      if (row == size) Some(queens.reverse)
+      else tryColumn(row, 0, queens)
+    }
+
+    def tryColumn(row: Int, col: Int, queens: List[Int]): Option[List[Int]] = {
+      if (col == size) None
+      else if (isSafe(queens, col)) {
+        place(row + 1, col :: queens) match {
+          case Some(solution) => Some(solution)
+          case None => tryColumn(row, col + 1, queens)
+        }
+      }
+      else tryColumn(row, col + 1, queens)
+    }
+
+    if (size <= 0) None
+    else place(0, Nil).map(_.toArray)
+  }
+
+  def printBoard(queens: Array[Int]): Unit = {
+    for (row <- queens.indices) {
+      val line = for (col <- queens.indices) yield if (queens(row) == col) 1 else 0
+      println(line.mkString(" "))
+    }
   }
 
 }
