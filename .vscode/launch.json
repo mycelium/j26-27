@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "WordFrequencyCounter",
+            "request": "launch",
+            "mainClass": "WordFrequencyCounter",
+            "projectName": ""
+        },
+        {
+            "type": "java",
             "name": "MatrixMult",
             "request": "launch",
             "mainClass": "MatrixMult",
