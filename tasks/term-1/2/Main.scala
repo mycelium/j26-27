@@ -67,7 +67,53 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
+    if (size < 0) None
+    else {
+      def isSafe(column: Int, queens: List[Int]): Boolean = {
+        def check(remaining: List[Int], distance: Int): Boolean = remaining match {
+          case Nil => true
+          case queen :: tail =>
+            queen != column && math.abs(queen - column) != distance && check(tail, distance + 1)
+        }
 
+        check(queens, 1)
+      }
+
+      def place(row: Int, queens: List[Int]): Option[List[Int]] = {
+        if (row == size) Some(queens.reverse)
+        else {
+          def tryColumn(column: Int): Option[List[Int]] = {
+            if (column == size) None
+            else if (isSafe(column, queens))
+              place(row + 1, column :: queens).orElse(tryColumn(column + 1))
+            else tryColumn(column + 1)
+          }
+
+          tryColumn(0)
+        }
+      }
+
+      place(0, Nil).map(_.toArray)
+    }
+  }
+
+  def printBoard(solution: Array[Int]): Unit = {
+    def printRow(row: Int): Unit = {
+      if (row < solution.length) {
+        def printColumn(column: Int): Unit = {
+          if (column < solution.length) {
+            print(if (solution(row) == column) "1 " else "0 ")
+            printColumn(column + 1)
+          }
+        }
+
+        printColumn(0)
+        println()
+        printRow(row + 1)
+      }
+    }
+
+    printRow(0)
   }
 
 }
