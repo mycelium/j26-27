@@ -28,3 +28,6 @@ replay_pid*
 .bsp/
 .metals/
 
+# sbt
+**/target/
+**/project/project/
