@@ -1,0 +1,53 @@
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] IncrementalCompile -----------[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncrementalCompile.incrementalCompile[0m
+[0m[[0m[0mdebug[0m] [0m[0mprevious = Stamps for: 0 products, 0 sources, 0 libraries[0m
+[0m[[0m[0mdebug[0m] [0m[0mcurrent source = Set(${BASE}/src/main/scala/common/package.scala, ${BASE}/src/main/scala/funsets/FunSets.scala, ${BASE}/src/main/scala/funsets/Main.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m> initialChanges = InitialChanges(Changes(added = Set(${BASE}/src/main/scala/common/package.scala, ${BASE}/src/main/scala/funsets/FunSets.scala, ${BASE}/src/main/scala/funsets/Main.scala), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())[0m
+[0m[[0m[0mdebug[0m] [0m[0mFull compilation, no sources in previous analysis.[0m
+[0m[[0m[0mdebug[0m] [0m[0mall 3 sources are invalidated[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: [0m
+[0m[[0m[0mdebug[0m] [0m[0mRecompiling all sources: number of invalidated sources > 50.0 percent of all sources[0m
+[0m[[0m[0mdebug[0m] [0m[0mcompilation cycle 1[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 3 Scala sources to C:\Users\arllr\j26-27\tasks\term-1\3\target\scala-2.12\classes ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mGetting org.scala-sbt:compiler-bridge_2.12:1.10.7:compile for Scala 2.12.7[0m
+[0m[[0m[0minfo[0m] [0m[0mNon-compiled module 'compiler-bridge_2.12' for Scala 2.12.7. Compiling...[0m
+[0m[[0m[0mdebug[0m] [0m[0mCreating plain compiler interface for 2.12.7.[0m
+[0m[[0m[0mdebug[0m] [0m[0m  > Arguments: [0m
+[0m[[0m[0mdebug[0m] [0m[0m	-d[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_af1bbe87[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-nowarn[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-bootclasspath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala-library\2.12.7\scala-library-2.12.7.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-sbt\compiler-interface\1.10.7\compiler-interface-1.10.7.jar;C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-sbt\util-interface\1.10.7\util-interface-1.10.7.jar;C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-sbt\compiler-bridge_2.12\1.10.7\compiler-bridge_2.12-1.10.7-sources.jar;C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala-compiler\2.12.7\scala-compiler-2.12.7.jar;C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala-reflect\2.12.7\scala-reflect-2.12.7.jar;C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\modules\scala-xml_2.12\1.0.6\scala-xml_2.12-1.0.6.jar;C:\Users\arllr\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\jline\jline\2.14.6\jline-2.14.6.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\scala\ZincCompat.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\scala\reflect\ReflectAccess.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\API.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\AbstractZincFile.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\Analyzer.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\CallbackGlobal.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\ClassName.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\Compat.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\CompilerBridge.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\ConsoleBridge.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\DelegatingReporter.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\Dependency.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\ExtractAPI.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\ExtractUsedNames.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\GlobalHelpers.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\InteractiveConsoleBridge.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\InteractiveConsoleFactoryBridge.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\InteractiveConsoleHelper.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\InteractiveConsoleResponse.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\JarUtils.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\JavaUtils.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\LocalToNonLocalClass.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\LocateClassFile.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\Log.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\Message.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\PlainNioFile.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\ScaladocBridge.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\arllr\AppData\Local\Temp\sbt_a4ce6195\xsbt\trace.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m      [0m
+[0m[[0m[0minfo[0m] [0m[0mAttempting to fetch org.scala-sbt:compiler-bridge_2.12:1.10.7.[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Error compiling the sbt component 'compiler-bridge_2.12'[0m
