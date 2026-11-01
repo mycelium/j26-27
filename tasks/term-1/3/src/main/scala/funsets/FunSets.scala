@@ -10,7 +10,7 @@ object FunSets {
    * We represent a set by its characteristic function, i.e.
    * its `contains` predicate.
    */
-  type Set = Int => Boolean
+  private type Set = Int => Boolean
 
   /**
    * Indicates whether a set contains a given element.
@@ -48,7 +48,7 @@ object FunSets {
   /**
    * The bounds for `forall` and `exists` are +/- 1000.
    */
-  val bound = 1000
+  private val bound = 1000
 
   /**
    * Returns whether all bounded integers within `s` satisfy `p`.
@@ -85,7 +85,7 @@ object FunSets {
   /**
    * Prints the contents of a set on the console.
    */
-  def printSet(s: Set) {
+  def printSet(s: Set): Unit = {
     println(toString(s))
   }
 }
