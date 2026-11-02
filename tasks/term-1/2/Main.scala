@@ -85,11 +85,11 @@ object Main {
     else place(0, Nil).map(_.toArray)
   }
 
-  def printBoard(queens: Array[Int]): Unit = {
-    for (row <- queens.indices) {
-      val line = for (col <- queens.indices) yield if (queens(row) == col) 1 else 0
-      println(line.mkString(" "))
-    }
+  def boardToString(queens: List[Int]): String = {
+    val size = queens.length
+    queens.map(q => List.tabulate(size)(col => if (col == q) 1 else 0).mkString(" ")).mkString("\n")
   }
+
+  def printBoard(queens: Array[Int]): Unit = println(boardToString(queens.toList))
 
 }
