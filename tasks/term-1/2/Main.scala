@@ -86,43 +86,46 @@ object Main {
   }
   
   def nQueens(size: Int): Option[Array[Int]] = {
-    if (size <= 0) return None
-
-    val queens = new Array[Int](size)
-
-    def safe(row: Int, col: Int): Boolean = {
-      var previousRow = 0
-
-      while (previousRow < row) {
-        val previousCol = queens(previousRow)
-
-        if (previousCol == col ||
-          math.abs(previousCol - col) == row - previousRow) {
-          return false
-        }
-        previousRow += 1
-      }
-      true
-    }
-
-    def search(row: Int): Boolean = {
-      if (row == size) true
-      else {
-        var col = 0
-
-        while (col < size) {
-          if (safe(row, col)) {
-            queens(row) = col
-            if (search(row + 1)) return true
+    if (size <= 0) None
+    else {
+      val queens = new Array[Int](size)
+  
+      def safe(row: Int, col: Int): Boolean = {
+        def check(previousRow: Int): Boolean = {
+          if (previousRow == row) true
+          else {
+            val previousCol = queens(previousRow)
+  
+            if (previousCol == col ||
+                math.abs(previousCol - col) == row - previousRow) false
+            else check(previousRow + 1)
           }
-          col += 1
         }
-        false
+  
+        check(0)
       }
+  
+      def search(row: Int): Boolean = {
+        if (row == size) true
+        else {
+          def tryColumn(col: Int): Boolean = {
+            if (col == size) false
+            else if (safe(row, col)) {
+              queens(row) = col
+  
+              if (search(row + 1)) true
+              else tryColumn(col + 1)
+            }
+            else tryColumn(col + 1)
+          }
+  
+          tryColumn(0)
+        }
+      }
+  
+      if (search(0)) Some(queens.clone())
+      else None
     }
-
-    if (search(0)) Some(queens.clone())
-    else None
   }
 
 }
