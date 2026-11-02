@@ -9,47 +9,88 @@ object Main {
         print(pascal(col, row) + " ")
       println()
     }
+
+    // Тесты для функций
+    println("\nBalance: " + balance("(if (zero? x) max (/ 1 x))".toList))
+    println("Balance: " + balance("I told him (that it's not (yet) done). (But he wasn't listening)".toList))
+    println("Balance: " + balance(":-)".toList))
+    println("Balance: " + balance("())(".toList))
+
+    println("\nCountChange (money=300): " + countChange(300, List(5, 10, 20, 50, 100, 200, 500)))
+    
+    println("\nN-Queens (8x8):")
+    nQueens(8).foreach(printBoard)
   }
 
   /**
    * Exercise 1
    */
   def pascal(c: Int, r: Int): Int = {
-
+    if (c < 0 || c > r) 0
+    else if (c == 0 || c == r) 1
+    else pascal(c - 1, r - 1) + pascal(c, r - 1)
   }
 
   /**
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-   
+    def loop(chars: List[Char], count: Int): Boolean = {
+      if (count < 0) false
+      else chars match {
+        case Nil => count == 0
+        case '(' :: tail => loop(tail, count + 1)
+        case ')' :: tail => loop(tail, count - 1)
+        case _ :: tail => loop(tail, count)
+      }
+    }
+    loop(chars, 0)
   }
 
   /**
    * Exercise 3 Counting Change
-   * Write a recursive function that counts how many different ways you can make
-   * change for an amount, given a list of coin denominations. For example,
-   * there is 1 way to give change for 5 if you have coins with denomiation
-   * 2 and 3: 2+3.
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-
+    if (money == 0) 1
+    else if (money < 0 || coins.isEmpty) 0
+    else countChange(money - coins.head, coins) + countChange(money, coins.tail)
   }
   
   /**
    * Excerice 4 N-Queens Problem
-   * Write a function that provides a solution for n-queens problem if possible
-   * Input parameter represents board size and number of queens
-   * Output is an array: index represents row number and value represents column number.
-   * Example: nQueens(4): [1,3,0,2] or
-   * 0 1 0 0
-   * 0 0 0 1
-   * 1 0 0 0
-   * 0 0 1 0
    */
-
   def nQueens(size: Int): Option[Array[Int]] = {
+    def isSafe(col: Int, queens: List[Int]): Boolean = {
+      val row = queens.length
+      val queensWithRow = (row - 1 to 0 by -1) zip queens
+      queensWithRow forall {
+        case (r, c) => col != c && math.abs(col - c) != row - r
+      }
+    }
 
+    def placeQueens(k: Int): Option[List[Int]] = {
+      if (k == 0) Some(List())
+      else {
+        for {
+          queens <- placeQueens(k - 1)
+          col <- 0 until size
+          if isSafe(col, queens)
+        } yield col :: queens
+      }
+    }
+
+    placeQueens(size).map(_.toArray)
   }
 
+  // Функция для печати доски
+  def printBoard(board: Array[Int]): Unit = {
+    val size = board.length
+    for (row <- 0 until size) {
+      for (col <- 0 until size) {
+        if (board(row) == col) print("1 ") else print("0 ")
+      }
+      println()
+    }
+    println()
+  }
 }
