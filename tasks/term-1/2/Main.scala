@@ -84,21 +84,18 @@ object Main {
       val queens = Array.fill(size)(-1)
 
       def isSafe(row: Int, col: Int): Boolean = {
-        var previousRow = 0
-        var safe = true
+        def check(previousRow: Int): Boolean = {
+          if (previousRow >= row) true
+          else {
+            val previousCol = queens(previousRow)
 
-        while (previousRow < row && safe) {
-          val previousCol = queens(previousRow)
-
-          if (previousCol == col ||
-              math.abs(previousCol - col) == row - previousRow) {
-            safe = false
+            previousCol != col &&
+            math.abs(previousCol - col) != row - previousRow &&
+            check(previousRow + 1)
           }
-
-          previousRow += 1
         }
 
-        safe
+        check(0)
       }
 
       def solve(row: Int, col: Int): Boolean = {
