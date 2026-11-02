@@ -1,5 +1,4 @@
 package recfun
-import scala.annotation.tailrec
 
 object Main {
   def main(args: Array[String]) {
@@ -45,7 +44,6 @@ object Main {
    * Exercise 2 Parentheses Balancing
    */
   def balance(chars: List[Char]): Boolean = {
-    @tailrec
     def loop(remaining: List[Char], opened: Int): Boolean = {
       remaining match {
         case Nil =>
@@ -100,7 +98,6 @@ object Main {
 
   def nQueens(size: Int): Option[Array[Int]] = {
     def isSafe(column: Int, placedQueens: List[Int]): Boolean = {
-      @tailrec
       def check(queens: List[Int], rowDistance: Int): Boolean = {
         queens match {
           case Nil =>
