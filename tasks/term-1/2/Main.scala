@@ -91,58 +91,52 @@ object Main {
    */
 
 def nQueens(size: Int): Option[Array[Int]] = {
-  if (size <= 0) {
-    return None
-  }
 
-  val queens = Array.fill(size)(-1)
+  def isSafe(col: Int, queens: List[Int], distance: Int): Boolean = {
+    queens match {
+      case Nil => true
 
-  def canPlace(row: Int, col: Int): Boolean = {
-    var i = 0
-
-    while (i < row) {
-      if (queens(i) == col) {
-        return false
-      }
-
-      if (math.abs(queens(i) - col) == row - i) {
-        return false
-      }
-
-      i += 1
-    }
-    true
-  }
-
-  def solve(row: Int): Boolean = {
-    if (row == size) {
-      return true
-    }
-
-    var col = 0
-
-    while (col < size) {
-      if (canPlace(row, col)) {
-        queens(row) = col
-
-        if (solve(row + 1)) {
-          return true
+      case q :: tail =>
+        if (q == col || math.abs(q - col) == distance) {
+          false
         }
-
-        queens(row) = -1
-      }
-      col += 1
+        else {
+          isSafe(col, tail, distance + 1)
+        }
     }
-
-    false
   }
 
-  if (solve(0)) {
-    Some(queens)
-  } 
-  else {
+  def place(row: Int, queens: List[Int]): Option[List[Int]] = {
+    if (row == size) {
+      Some(queens.reverse)
+    }
+    else {
+      def tryColumn(col: Int): Option[List[Int]] = {
+        if (col == size) {
+          None
+        }
+        else if (isSafe(col, queens, 1)) {
+          place(row + 1, col :: queens) match {
+            case Some(result) => Some(result)
+            case None => tryColumn(col + 1)
+          }
+        }
+        else {
+          tryColumn(col + 1)
+        }
+      }
+      tryColumn(0)
+    }
+  }
+
+  if (size <= 0) {
     None
   }
-}
-
+  
+  else {
+    place(0, Nil) match {
+      case Some(result) => Some(result.toArray)
+      case None => None
+    }
+  }
 }
