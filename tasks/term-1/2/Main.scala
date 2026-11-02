@@ -92,35 +92,27 @@ object Main {
    */
 
   def nQueens(size: Int): Option[Array[Int]] = {
-    def isValid(row: Int, col: Int, queens: Array[Int]) : Boolean = {
-      var i = 0
-      while(i < row){
-        val c = queens(i)
-        if(c == col || Math.abs(c - col) == row - i){ // проверка не тот же ли столбец и не та же диагональ
-          return false
-        }
-        i += 1
-      }
-      true
-    }
-    def solve(row: Int, current : Array[Int]): Option[Array[Int]] = {
-      if(row == size){ // все строки заполнены => возвращаем
-        Some(current.clone())
-      } else {
-        var result: Option[Array[Int]] = None
-        var col = 0
-        while(col < size && result.isEmpty){
-          if(isValid(row, col, current)){ // если можем поставить
-            current(row) = col // ставим
-            result = solve(row + 1, current) // расставляем дальше со след. строки
-          }
-          col += 1 // двигаемся к следующему столбцу
-        }
-        result // либо Some(current.clone()), либо None
+    def isValid(row: Int, col: Int, queens: Vector[Int]): Boolean = {
+      queens.indices.forall { i =>
+        val previousCol = queens(i)
+        previousCol != col && Math.abs(previousCol - col) != row - i
       }
     }
-    if(size <= 0) None
-    else solve(0, Array.ofDim[Int](size))
+
+    def solve(row: Int, queens: Vector[Int]): Option[Vector[Int]] = {
+      if (row == size) Some(queens)
+      else {
+        def tryColumn(col: Int): Option[Vector[Int]] = {
+          if (col == size) None
+          else if (!isValid(row, col, queens)) tryColumn(col + 1)
+          else solve(row + 1, queens :+ col).orElse(tryColumn(col + 1))
+        }
+        tryColumn(0)
+      }
+    }
+
+    if (size <= 0) None
+    else solve(0, Vector.empty).map(_.toArray)
   }
 
   def print_(problem: Array[Int]): Unit = {
