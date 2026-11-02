@@ -31,7 +31,6 @@ public class WordFrequencyCounter {
             while ((line = reader.readLine()) != null) {
                 Matcher m = word.matcher(line);
                 while (m.find()) {
-                    // frequencies.merge(m.group(), 1, Integer::sum);
                     addWord(frequencies, m.group());
                 }
             }
