@@ -22,7 +22,7 @@ object Main {
         println(solution.mkString("[", ", ", "]"))
         printBoard(solution)
       case None =>
-        println("Решение не найдено")
+        println("Solution not found")
     }
   }
 
@@ -83,7 +83,7 @@ object Main {
         countChange(amount, tail) + countChange(amount - coin, coin :: tail)
     }
   }
-  
+
   /**
    * Excerice 4 N-Queens Problem
    * Write a function that provides a solution for n-queens problem if possible
