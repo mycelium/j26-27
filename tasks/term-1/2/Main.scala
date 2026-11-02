@@ -57,28 +57,19 @@ object Main {
    * 1 0 0 0
    * 0 0 1 0
    */
-
   def nQueens(size: Int): Option[Array[Int]] = {
-    val queens = Array.fill(size)(-1)
-
-    def isSafe(row: Int, column: Int, previousRow: Int): Boolean = {
-      if (previousRow == row) true
-      else if (queens(previousRow) == column ||
-        math.abs(queens(previousRow) - column) == row - previousRow) false
-      else isSafe(row, column, previousRow + 1)
+    def place(column: Int, queens: List[Int]): Option[Array[Int]] = {
+      if (queens.length == size) {
+        Some(queens.reverse.toArray)
+      } else if (column == size) None
+      else if (
+        queens.indices.forall(i => queens(i) != column && math.abs(queens(i) - column) != i + 1)
+      ) {
+        place(0, column :: queens).orElse(place(column + 1, queens))
+      } else place(column + 1, queens)
     }
 
-    def place(row: Int, column: Int): Boolean = {
-      if (row == size) true
-      else if (column == size) false
-      else if (isSafe(row, column, 0)) {
-        queens(row) = column
-        if (place(row + 1, 0)) true
-        else place(row, column + 1)
-      } else place(row, column + 1)
-    }
-
-    if (place(0, 0)) Some(queens) else None
+    place(0, Nil)
   }
 
   def printBoard(queens: Array[Int]): Unit = {
