@@ -81,19 +81,18 @@ object Main {
    * 0 0 1 0
    */
 
-      def nQueens(size: Int): Option[Array[Int]] = {
+  def nQueens(size: Int): Option[Array[Int]] = {
     def isSafe(col: Int, placed: List[Int]): Boolean = {
       val row = placed.length
-      placed.zip(List.range(row - 1, -1, -1)).forall { case (c, r) =>
+      placed.zipWithIndex.forall { case (c, i) =>
+        val r = row - 1 - i
         c != col && Math.abs(c - col) != row - r
       }
     }
 
     def solve(placed: List[Int]): Option[List[Int]] = {
       if (placed.length == size) Some(placed)
-      else {
-        (0 until size).find(col => isSafe(col, placed)).flatMap(col => solve(col :: placed))
-      }
+      else (0 until size).find(col => isSafe(col, placed)).flatMap(col => solve(col :: placed))
     }
 
     solve(List.empty).map(_.reverse.toArray)
