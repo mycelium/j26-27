@@ -19,6 +19,10 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+    implementation("edu.stanford.nlp:stanford-corenlp:4.6.0")
+    runtimeOnly("edu.stanford.nlp:stanford-corenlp:4.6.0:models")
+    implementation("org.apache.commons:commons-csv:1.14.1")
+    runtimeOnly("org.slf4j:slf4j-simple:2.0.17")
 }
 
 testing {
@@ -41,4 +45,8 @@ java {
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+}
+
+tasks.named<JavaExec>("run") {
+    workingDir = rootProject.projectDir
 }
