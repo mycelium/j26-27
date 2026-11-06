@@ -1,23 +1,17 @@
 package ru.khramov;
 
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.CoreSentence;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import ru.khramov.score.ScoredSentence;
+import ru.khramov.score.SentenceScorer;
 
-import java.util.Properties;
+import java.util.List;
 
 public class App {
 
 	public static void main(String[] args) {
-		Properties properties = new Properties();
-		properties.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
-		StanfordCoreNLP pipeline = new StanfordCoreNLP(properties);
-
-		CoreDocument document = new CoreDocument("This movie was great. The ending was awful.");
-		pipeline.annotate(document);
-		for (CoreSentence sentence : document.sentences()) {
-			System.out.println(sentence.sentiment() + ": " + sentence.text());
+		SentenceScorer sentenceScorer = new SentenceScorer();
+		List<ScoredSentence> scored = sentenceScorer.score("This movie was great. The ending was awful.");
+		for (ScoredSentence sentence : scored) {
+			System.out.println(sentence);
 		}
 	}
 }
