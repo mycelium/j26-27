@@ -1,0 +1,9 @@
+Reviews: 100 (IMDB Dataset.csv)
+
+Aggregator         Accuracy    Neutral   Acc. w/o neutral
+ArithmeticMean        27.0%      71.0%              93.1%
+Voting                58.0%      25.0%              77.3%
+LengthWeighted        33.0%      61.0%              84.6%
+LastSentence          44.0%      31.0%              63.8%
+
+Evaluated in 422.2 s
