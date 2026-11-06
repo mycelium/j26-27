@@ -1,5 +1,7 @@
 package ru.khramov.aggregate;
 
+import java.util.Locale;
+
 public enum Sentiment {
 	NEGATIVE,
 	NEUTRAL,
@@ -15,5 +17,14 @@ public enum Sentiment {
 		} else {
 			throw new IllegalArgumentException("score out of range: " + score);
 		}
+	}
+
+	public static Sentiment fromLabel(String label) {
+		return switch (label.toLowerCase(Locale.ROOT)) {
+			case "negative" -> NEGATIVE;
+			case "positive" -> POSITIVE;
+			case "neutral" -> NEUTRAL;
+			default -> throw new IllegalArgumentException("unknow label: " + label);
+		};
 	}
 }

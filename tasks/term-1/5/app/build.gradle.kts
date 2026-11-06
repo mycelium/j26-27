@@ -21,6 +21,8 @@ dependencies {
     implementation(libs.guava)
     implementation("edu.stanford.nlp:stanford-corenlp:4.5.9")
     implementation("edu.stanford.nlp:stanford-corenlp:4.5.9:models")
+    implementation("org.apache.commons:commons-csv:1.12.0")
+    implementation("org.apache.commons:commons-csv:1.12.0")
 }
 
 testing {

@@ -21,4 +21,17 @@ public class SentimentTest {
 	void fromScore(double score, Sentiment sentiment) {
 		assertEquals(sentiment, Sentiment.fromScore(score));
 	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"negative, NEGATIVE",
+			"NEGATIVE, NEGATIVE",
+			"neutral, NEUTRAL",
+			"NEUTRAL, NEUTRAL",
+			"positive, POSITIVE",
+			"POSITIVE, POSITIVE",
+	})
+	void fromLabel(String label, Sentiment sentiment) {
+		assertEquals(sentiment, Sentiment.fromLabel(label));
+	}
 }
