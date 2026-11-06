@@ -21,4 +21,19 @@ class TextCleanerTest {
 	void leavesPlainTextUnchanged() {
 		assertEquals("Just text.", cleaner.clean("Just text."));
 	}
+
+	@Test
+	void collapsesRepeatedWhitespace() {
+		assertEquals("a b c", cleaner.clean("a   b \t c"));
+	}
+
+	@Test
+	void trimsEdges() {
+		assertEquals("a", cleaner.clean("  <br />a<br />  "));
+	}
+
+	@Test
+	void emptyStringStaysEmpty() {
+		assertEquals("", cleaner.clean(""));
+	}
 }

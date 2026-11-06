@@ -24,7 +24,7 @@ public enum Sentiment {
 			case "negative" -> NEGATIVE;
 			case "positive" -> POSITIVE;
 			case "neutral" -> NEUTRAL;
-			default -> throw new IllegalArgumentException("unknow label: " + label);
+			default -> throw new IllegalArgumentException("unknown label: " + label);
 		};
 	}
 }

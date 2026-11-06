@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CsvReviewReaderTest {
 	private final CsvReviewReader reader = new CsvReviewReader();
@@ -56,5 +57,40 @@ class CsvReviewReaderTest {
 		Path file = write(dir, "review,sentiment\nA,positive\nB,positive\nC,negative\n");
 
 		assertEquals(2, reader.read(file, 2).size());
+	}
+
+	@Test
+	void emptyFileBodyGivesNoReviews(@TempDir Path dir) throws IOException {
+		Path file = write(dir, "review,sentiment\n");
+
+		assertEquals(List.of(), reader.read(file, 10));
+	}
+
+	@Test
+	void zeroLimitGivesNoReviews(@TempDir Path dir) throws IOException {
+		Path file = write(dir, "review,sentiment\nA,positive\n");
+
+		assertEquals(List.of(), reader.read(file, 0));
+	}
+
+	@Test
+	void keepsNewlineInsideQuotesAsSpace(@TempDir Path dir) throws IOException {
+		Path file = write(dir, "review,sentiment\n\"line1\nline2\",positive\n");
+
+		assertEquals("line1 line2", reader.read(file, 10).getFirst().text());
+	}
+
+	@Test
+	void readsNonAsciiText(@TempDir Path dir) throws IOException {
+		Path file = write(dir, "review,sentiment\nCafé — très bien,positive\n");
+
+		assertEquals("Café — très bien", reader.read(file, 10).getFirst().text());
+	}
+
+	@Test
+	void unknownLabelThrows(@TempDir Path dir) throws IOException {
+		Path file = write(dir, "review,sentiment\nA,unknown\n");
+
+		assertThrows(IllegalArgumentException.class, () -> reader.read(file, 10));
 	}
 }
