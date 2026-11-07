@@ -7,8 +7,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    @Test void mostVotesWin() {
+        assertEquals("positive", App.vote(2, 2, 3));
+        assertEquals("negative", App.vote(3, 0, 2));
+    }
+
+    @Test void tieOrMostlyNeutral() {
+        assertEquals("neutral", App.vote(2, 0, 2));
+        assertEquals("neutral", App.vote(1, 2, 0));
+        assertEquals("neutral", App.vote(0, 0, 0));
     }
 }

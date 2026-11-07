@@ -3,12 +3,102 @@
  */
 package org.example;
 
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+    public static void main(String[] args) throws IOException {
+        if (args.length == 0 || args.length > 2) {
+            System.out.println("Usage: App <reviews.csv> [limit]");
+            return;
+        }
+
+        int limit = args.length == 2 ? Integer.parseInt(args[1]) : Integer.MAX_VALUE;
+        if (limit < 1) {
+            throw new IllegalArgumentException("Review limit must be positive.");
+        }
+
+        CSVFormat format = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build();
+        try (var reader = Files.newBufferedReader(Path.of(args[0])); var reviews = format.parse(reader)) {
+            if (!reviews.getHeaderMap().containsKey("review")) {
+                throw new IllegalArgumentException("CSV must have a review column.");
+            }
+            boolean hasLabels = reviews.getHeaderMap().containsKey("sentiment");
+
+            Properties properties = new Properties();
+            properties.setProperty("annotators", "tokenize,ssplit,parse,sentiment");
+            StanfordCoreNLP pipeline = new StanfordCoreNLP(properties);
+
+            int total = 0;
+            int neutral = 0;
+            int correct = 0;
+            for (CSVRecord review : reviews) {
+                String text = review.get("review").replaceAll("(?i)<br\\s*/?>", " ");
+                String label = classify(pipeline, text);
+                total++;
+                if (label.equals("neutral")) {
+                    neutral++;
+                }
+
+                if (hasLabels) {
+                    String expected = review.get("sentiment").trim();
+                    if (label.equalsIgnoreCase(expected)) {
+                        correct++;
+                    }
+                    System.out.printf("Review %d: %s (expected: %s)%n", total, label, expected);
+                } else {
+                    System.out.printf("Review %d: %s%n", total, label);
+                }
+
+                if (total == limit) {
+                    break;
+                }
+            }
+
+            System.out.printf("Reviews: %d, neutral: %d%n", total, neutral);
+            if (hasLabels && total > 0) {
+                System.out.printf("Accuracy: %d/%d (%.1f%%)%n", correct, total, 100.0 * correct / total);
+            }
+        }
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    private static String classify(StanfordCoreNLP pipeline, String text) {
+        CoreDocument document = new CoreDocument(text);
+        pipeline.annotate(document);
+
+        int negative = 0;
+        int neutral = 0;
+        int positive = 0;
+        for (CoreSentence sentence : document.sentences()) {
+            int score = RNNCoreAnnotations.getPredictedClass(sentence.sentimentTree());
+            if (score < 2) {
+                negative++;
+            } else if (score > 2) {
+                positive++;
+            } else {
+                neutral++;
+            }
+        }
+        return vote(negative, neutral, positive);
+    }
+
+    static String vote(int negative, int neutral, int positive) {
+        if (positive > negative && positive > neutral) {
+            return "positive";
+        }
+        if (negative > positive && negative > neutral) {
+            return "negative";
+        }
+        // neutral wins or there's a tie
+        return "neutral";
     }
 }
