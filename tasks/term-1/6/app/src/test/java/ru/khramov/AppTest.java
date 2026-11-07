@@ -9,7 +9,7 @@ public class AppTest {
 
 	@Test
 	public void parsePointDefault() {
-		assertEquals(new Point(5, 5), App.parsePoint(new String[]{}));
+		assertEquals(new Point(4, 4), App.parsePoint(new String[]{}));
 	}
 
 	@Test
