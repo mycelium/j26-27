@@ -14,18 +14,19 @@ public class WordFrequencyCounter {
         }
         catch (Exception e) {
             System.out.println("Не удалось найти файл");
-            return null;
+            return new HashMap<>();
         }
 
-        String [] splitText = text.split("[.,!-?\\s]+");
+        String [] splitText = text.toLowerCase().split("[^\\p{L}]+");
 
         Map<String, Integer> counterWorldsMap = Arrays.stream(splitText)
-            .map(String::toLowerCase)
+            //.map(String::toLowerCase)
             .filter(world -> !world.isEmpty())
             .distinct()
             .collect(Collectors.toMap(world -> world, world -> 0));
 
         for (String world : splitText){
+            if (world.isEmpty()) continue;
             counterWorldsMap.merge(world, 1, Integer::sum);
             
         }
@@ -39,7 +40,7 @@ public class WordFrequencyCounter {
         // read file, tokenize words, update map
         try(Stream<String> line = Files.lines(filePath);){
             return line
-            .map(l -> l.split("[.,!-?\\s]+"))
+            .map(l -> l.split("[^\\p{L}]+"))
             .flatMap(Arrays::stream)
             .map(String::toLowerCase)
             .filter(world -> !world.isEmpty())
@@ -47,7 +48,7 @@ public class WordFrequencyCounter {
         }
         catch (Exception e) {
             System.out.println("Не удалось найти файл");
-            return null;
+            return new HashMap<>();
         }
 
         
@@ -62,9 +63,14 @@ public class WordFrequencyCounter {
     public static void main(String[] args) {
         // run word frequency counter
 
-        WordFrequencyCounter counter = new WordFrequencyCounter();
-        Path filePath = Path.of("C:\\Users\\User\\Desktop\\V\\3 курс 5 сем\\JAVA\\Text.txt") ;
+        if (args.length < 1) {
+            System.out.println("Укажите путь к файлу");
+            return;
+            }
+        Path filePath = Path.of(args[0]);
 
+        WordFrequencyCounter counter = new WordFrequencyCounter();
+        
         counter.printFrequencies(counter.countWords(filePath));
         counter.printFrequencies(counter.countWordsline_by_line(filePath));
 
