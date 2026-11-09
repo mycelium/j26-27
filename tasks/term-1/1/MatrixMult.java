@@ -7,7 +7,7 @@ public class MatrixMult {
 			double[][] result = new double[firstMatrix.length][secondMatrix[0].length];
 			for (int i = 0; i < firstMatrix.length; i++) {
 				for (int j = 0; j < secondMatrix[0].length; j++) {
-					for (int k = 0; k < secondMatrix[0].length; k++) {
+					for (int k = 0; k < secondMatrix.length; k++) {
 						result[i][j] += firstMatrix[i][k] * secondMatrix[k][j];
 					}
 				}
