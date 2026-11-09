@@ -19,6 +19,10 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+    // Source: https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp
+    implementation("edu.stanford.nlp:stanford-corenlp:4.6.0")
+    implementation("edu.stanford.nlp:stanford-corenlp:4.6.0:models")
+    implementation("org.apache.commons:commons-csv:1.12.0")
 }
 
 testing {

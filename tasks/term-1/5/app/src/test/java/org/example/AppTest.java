@@ -11,4 +11,20 @@ class AppTest {
         App classUnderTest = new App();
         assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
     }
+    @Test void label3Boundaries() {
+        assertEquals("negative", App.label3(0.0));
+        assertEquals("negative", App.label3(1.3));
+        assertEquals("neutral",  App.label3(4.0 / 3));
+        assertEquals("neutral",  App.label3(2.0));
+        assertEquals("neutral",  App.label3(2.6));
+        assertEquals("positive", App.label3(8.0 / 3));
+        assertEquals("positive", App.label3(4.0));
+    }
+
+    @Test void label2Boundaries() {
+        assertEquals("negative", App.label2(0.0));
+        assertEquals("negative", App.label2(1.99));
+        assertEquals("positive", App.label2(2.0));
+        assertEquals("positive", App.label2(4.0));
+    }
 }
