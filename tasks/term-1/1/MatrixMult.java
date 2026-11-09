@@ -10,7 +10,7 @@ public class MatrixMult {
 		int colsFirst = firstMatrix[0].length;
 		int colsSecond = secondMatrix[0].length;
 
-		if (rowsSecond != colsFirst || rowsSecond != colsSecond) {
+		if (rowsSecond != colsFirst) {
 			System.out.println("Ошибка: массивы не удовлетворяют условию для перемножения.");
 			return null;
 		}
