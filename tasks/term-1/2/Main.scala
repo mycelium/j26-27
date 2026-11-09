@@ -107,36 +107,37 @@ def nQueens(size: Int): Option[Array[Int]] = {
   }
 
   def place(row: Int, queens: List[Int]): Option[List[Int]] = {
-    if (row == size) {
-      Some(queens.reverse)
-    }
-    else {
-      def tryColumn(col: Int): Option[List[Int]] = {
-        if (col == size) {
-          None
-        }
-        else if (isSafe(col, queens, 1)) {
-          place(row + 1, col :: queens) match {
-            case Some(result) => Some(result)
-            case None => tryColumn(col + 1)
+      if (row == size) {
+        Some(queens.reverse)
+      }
+      else {
+        def tryColumn(col: Int): Option[List[Int]] = {
+          if (col == size) {
+            None
+          }
+          else if (isSafe(col, queens, 1)) {
+            place(row + 1, col :: queens) match {
+              case Some(result) => Some(result)
+              case None => tryColumn(col + 1)
+            }
+          }
+          else {
+            tryColumn(col + 1)
           }
         }
-        else {
-          tryColumn(col + 1)
-        }
+        tryColumn(0)
       }
-      tryColumn(0)
     }
-  }
 
-  if (size <= 0) {
-    None
-  }
+    if (size <= 0) {
+      None
+    }
   
-  else {
-    place(0, Nil) match {
-      case Some(result) => Some(result.toArray)
-      case None => None
+    else {
+      place(0, Nil) match {
+        case Some(result) => Some(result.toArray)
+        case None => None
+      }
     }
   }
 }
