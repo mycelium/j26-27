@@ -42,10 +42,10 @@ public class MatrixMult {
 		for (int i = 0; i < resRows; ++i) {
 			double[] aRow = firstMatrix[i];
 			double[] resRow = resMatrix[i];
-			for (int r = 0; r < resCols; ++r) {
+			for (int r = 0; r < m; ++r) {
 				double air = aRow[r];
 				double[] bRow = secondMatrix[r];
-				for (int j = 0; j < m; ++j) {
+				for (int j = 0; j < resCols; ++j) {
 					resRow[j] += air * bRow[j];
 				}
 			}
