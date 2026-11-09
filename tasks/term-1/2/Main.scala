@@ -60,26 +60,34 @@ object Main {
    * Excerice 4 N-Queens Problem
    */
   def nQueens(size: Int): Option[Array[Int]] = {
-    def isSafe(col: Int, queens: List[Int]): Boolean = {
-      val row = queens.length
-      val queensWithRow = (row - 1 to 0 by -1) zip queens
-      queensWithRow forall {
-        case (r, c) => col != c && math.abs(col - c) != row - r
+    // queens: столбцы уже поставленных ферзей для строк 0, 1, ..., row-1
+    def isSafe(col: Int, row: Int, queens: List[Int]): Boolean =
+      queens.zipWithIndex.forall { case (queenCol, queenRow) =>
+        col != queenCol && math.abs(col - queenCol) != row - queenRow
+      }
+
+    def place(row: Int, queens: List[Int]): Option[List[Int]] = {
+      if (row == size) {
+        Some(queens)
+      } else {
+        def tryColumns(columns: List[Int]): Option[List[Int]] = columns match {
+          case Nil => None
+          case col :: tail =>
+            if (isSafe(col, row, queens)) {
+              place(row + 1, queens :+ col) match {
+                case Some(solution) => Some(solution)
+                case None           => tryColumns(tail)
+              }
+            } else {
+              tryColumns(tail)
+            }
+        }
+
+        tryColumns((0 until size).toList)
       }
     }
 
-    def placeQueens(k: Int): Option[List[Int]] = {
-      if (k == 0) Some(List())
-      else {
-        for {
-          queens <- placeQueens(k - 1)
-          col <- 0 until size
-          if isSafe(col, queens)
-        } yield col :: queens
-      }
-    }
-
-    placeQueens(size).map(_.toArray)
+    place(0, Nil).map(_.toArray)
   }
 
   // Функция для печати доски
