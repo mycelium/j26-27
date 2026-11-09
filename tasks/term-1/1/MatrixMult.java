@@ -1,18 +1,28 @@
-
 import java.util.Random;
 
 
 public class MatrixMult {
 
+    private static void checkSizes(double[][] firstMatrix, double[][] secondMatrix) {
+        if (firstMatrix == null || secondMatrix == null
+                || firstMatrix.length == 0 || secondMatrix.length == 0
+                || firstMatrix[0].length == 0 || secondMatrix[0].length == 0) {
+            throw new IllegalArgumentException("Matrices must not be null or empty");
+        }
+        if (firstMatrix[0].length != secondMatrix.length) {
+            throw new IllegalArgumentException("Matrices cannot be multiplied: "
+                    + firstMatrix.length + "x" + firstMatrix[0].length + " and "
+                    + secondMatrix.length + "x" + secondMatrix[0].length);
+        }
+    }
+
     public static double[][] multiply( double[][] firstMatrix, double[][] secondMatrix) {
+
+        checkSizes(firstMatrix, secondMatrix);
 
         int rows = firstMatrix.length;
         int columns = secondMatrix[0].length;
         int commonSize = firstMatrix[0].length;
-
-        if (commonSize != secondMatrix[0].length) {
-            throw new IllegalArgumentException("Matrices cannot be multiplied" );
-        }
 
         double[][] result = new double[rows][columns];
 
@@ -31,13 +41,11 @@ public class MatrixMult {
 
     public static double[][] multiplyReordered( double[][] firstMatrix, double[][] secondMatrix) {
 
+        checkSizes(firstMatrix, secondMatrix);
+
         int rows = firstMatrix.length;
         int columns = secondMatrix[0].length;
         int commonSize = firstMatrix[0].length;
-
-        if (commonSize != secondMatrix[0].length) {
-            throw new IllegalArgumentException("Matrices cannot be multiplied");
-        }
 
         double[][] result = new double[rows][columns];
 
@@ -58,13 +66,15 @@ public class MatrixMult {
     
 public static double[][] multiplyBlocked( double[][] firstMatrix, double[][] secondMatrix, int blockSize) {
 
+    checkSizes(firstMatrix, secondMatrix);
+
+    if (blockSize <= 0) {
+        throw new IllegalArgumentException("Block size must be positive");
+    }
+
     int rows = firstMatrix.length;
     int commonSize = firstMatrix[0].length;
     int columns = secondMatrix[0].length;
-
-    if (commonSize != secondMatrix[0].length) {
-        throw new IllegalArgumentException("Matrices cannot be multiplied");
-    }
 
     double[][] result = new double[rows][columns];
 
@@ -95,6 +105,10 @@ public static double[][] multiplyBlocked( double[][] firstMatrix, double[][] sec
 
 
     public static double[][] createMatrix(int rows, int cols) {
+        if (rows <= 0 || cols <= 0) {
+            throw new IllegalArgumentException("Matrix size must be positive: " + rows + "x" + cols);
+        }
+
         double[][] matrix = new double[rows][cols];
         Random random = new Random();
         for (int i = 0; i < rows; i++) {
@@ -106,7 +120,62 @@ public static double[][] multiplyBlocked( double[][] firstMatrix, double[][] sec
         return matrix;
     }
 
+    public static void printMatrix(double[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    
     public static void main(String[] args) {
+
+
+        double[][] a = {{1, 2, 3}, {4, 5, 6}};
+        double[][] b = {{7, 8}, {9, 10}, {11, 12}};
+        System.out.println("2x3 * 3x2 (multiply):");
+        printMatrix(multiply(a, b));
+        System.out.println("2x3 * 3x2 (reordered):");
+        printMatrix(multiplyReordered(a, b));
+        System.out.println("2x3 * 3x2 (blocked):");
+        printMatrix(multiplyBlocked(a, b, 2));
+
+        double[][] c = {{1, 2}, {3, 4}};
+        double[][] d = {{5, 6}, {7, 8}};
+        System.out.println("2x2 * 2x2 (multiply):");
+        printMatrix(multiply(c, d));
+
+        try {
+            multiply(a, a);
+            System.out.println("ОШИБКА: исключение не выброшено");
+        } catch (IllegalArgumentException e) {
+            System.out.println("2x3 * 2x3: " + e.getMessage());
+        }
+
+        try {
+            createMatrix(0, 5);
+            System.out.println("ОШИБКА: исключение не выброшено");
+        } catch (IllegalArgumentException e) {
+            System.out.println("createMatrix(0, 5): " + e.getMessage());
+        }
+
+        try {
+            multiply(new double[0][0], a);
+            System.out.println("ОШИБКА: исключение не выброшено");
+        } catch (IllegalArgumentException e) {
+            System.out.println("пустая матрица * 2x3: " + e.getMessage());
+        }
+
+        double[][] x = createMatrix(500, 700);
+        double[][] y = createMatrix(700, 300);
+        double[][] r1 = multiply(x, y);
+        double[][] r2 = multiplyReordered(x, y);
+        double[][] r3 = multiplyBlocked(x, y, 64);
+
+
+
         double[][] first = createMatrix(1000, 1000);
         double[][] second = createMatrix(1000, 1000);
 
