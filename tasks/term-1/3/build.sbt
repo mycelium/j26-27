@@ -1,12 +1,12 @@
 name := "funsets"
 
-scalaVersion := "2.12.18"
+scalaVersion := "2.12.7"
 
 scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-optimise",
-//  "-Yinline-warnings"
+  "-Yinline-warnings"
 )
 
 fork := true
