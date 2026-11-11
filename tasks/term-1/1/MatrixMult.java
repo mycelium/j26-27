@@ -1,104 +1,114 @@
+import java.util.Arrays;
+import java.util.Random;
+
 public class MatrixMult {
 
 	public static double[][] multiply(double[][] firstMatrix, double[][] secondMatrix) {
-		int rowsA = firstMatrix.length;
-		int colsA = firstMatrix[0].length;
-		int rowsB = secondMatrix.length;
-		int colsB = secondMatrix[0].length;
+		validate(firstMatrix, secondMatrix);
 
-        if (colsA != rowsB) {
-            throw new IllegalArgumentException("Несовместимые размеры матриц");
-        }
+		int n = firstMatrix.length;
+		int m = secondMatrix.length;
+		int p = secondMatrix[0].length;
 
-		double[][] result = new double[rowsA][colsB];
+		double[][] result = new double[n][p];
 
-		for (int i = 0; i < rowsA; i++) {
-			for (int j = 0; j < colsB; j++) {
-				for (int v = 0; v < colsA; v++) {
-					result[i][j] += firstMatrix[i][v] * secondMatrix[v][j];
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < p; j++) {
+				double sum = 0;
+				for (int k = 0; k < m; k++) {
+					sum += firstMatrix[i][k] * secondMatrix[k][j];
 				}
+				result[i][j] = sum;
 			}
 		}
-
 		return result;
 	}
 
-    public static double[][] multiplyOptimized(double[][] firstMatrix, double[][] secondMatrix) {
-        int rowsA = firstMatrix.length;
-        int colsA = firstMatrix[0].length;
-        int rowsB = secondMatrix.length;
-        int colsB = secondMatrix[0].length;
+	public static double[][] multiplyOptimized(double[][] firstMatrix, double[][] secondMatrix) {
+		validate(firstMatrix, secondMatrix);
 
-        if (colsA != rowsB) {
-            throw new IllegalArgumentException("Несовместимые размеры матриц");
-        }
+		int n = firstMatrix.length;
+		int m = secondMatrix.length;
+		int p = secondMatrix[0].length;
 
-        double[][] result = new double[rowsA][colsB];
+		double[][] result = new double[n][p];
 
-        double[][] transposedB = new double[colsB][rowsB];
-        for (int i = 0; i < rowsB; i++) {
-            for (int j = 0; j < colsB; j++) {
-                transposedB[j][i] = secondMatrix[i][j];
-            }
-        }
+		for (int i = 0; i < n; i++) {
+			double[] firstRow = firstMatrix[i];
+			double[] resultRow = result[i];
+			for (int k = 0; k < m; k++) {
+				double aik = firstRow[k];
+				double[] secondRow = secondMatrix[k];
+				for (int j = 0; j < p; j++) {
+					resultRow[j] += aik * secondRow[j];
+				}
+			}
+		}
+		return result;
+	}
 
-        for (int i = 0; i < rowsA; i++) {
-            for (int k = 0; k < colsA; k++) {
-                double aVal = firstMatrix[i][k];
-                double[] rowA = result[i];
-                double[] rowB = transposedB[k];
-                
-                for (int j = 0; j < colsB; j++) {
-                    rowA[j] += aVal * rowB[j];
-                }
-            }
-        }
+	private static void validate(double[][] a, double[][] b) {
+		if (a == null || b == null || a.length == 0 || b.length == 0 || a[0].length == 0 || b[0].length == 0) {
+			throw new IllegalArgumentException("Матрицы не должны быть null или пустыми");
+		}
+		if (a[0].length != b.length) {
+			throw new IllegalArgumentException("Число столбцов первой матрицы (" + a[0].length + ") должно равняться числу строк второй (" + b.length + ")");
+		}
+	}
 
-        return result;
-    }
+	private static double[][] randomMatrix(int rows, int cols, Random random) {
+		double[][] matrix = new double[rows][cols];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				matrix[i][j] = random.nextDouble();
+			}
+		}
+		return matrix;
+	}
 
-    public static void main(String[] args) {
-        int size = 1000;
-        
-        System.out.println("Генерация матриц " + size + "x" + size);
-        double[][] A = generateMatrix(size, size);
-        double[][] B = generateMatrix(size, size);
+	private static boolean equalMatrices(double[][] a, double[][] b, double eps) {
+		if (a.length != b.length || a[0].length != b[0].length) {
+			return false;
+		}
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				if (Math.abs(a[i][j] - b[i][j]) > eps) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-        System.out.println("Начало умножения (без оптмимзации)");
-        long startTime1 = System.nanoTime();
-        
-		double[][] C1 = multiply(A, B);
-        
-        long endTime1 = System.nanoTime();
-        long durationMs1 = (endTime1 - startTime1) / 1_000_000;
-
-        System.out.println("Время выполнения: " + durationMs1 + " мс");
-
-		
-
-        System.out.println("Начало умножения (с оптимищацией)");
-        long startTime2 = System.nanoTime();
-        
-
-		double[][] C2 = multiplyOptimized(A, B);
-        
-        long endTime2 = System.nanoTime();
-        long durationMs2 = (endTime2 - startTime2) / 1_000_000;
-
-        System.out.println("Время выполнения: " + durationMs2 + " мс");
+	public static void main(String[] args) {
+		int size = args.length > 0 ? Integer.parseInt(args[0]) : 1000;
+		Random random = new Random(42);
 
 
-    }
+		double[][] warmA = randomMatrix(200, 200, random);
+		double[][] warmB = randomMatrix(200, 200, random);
+		for (int i = 0; i < 5; i++) {
+			multiply(warmA, warmB);
+			multiplyOptimized(warmA, warmB);
+		}
 
-    private static double[][] generateMatrix(int rows, int cols) {
-        double[][] matrix = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                matrix[i][j] = Math.random();
-            }
-        }
-        return matrix;
-    }
+		System.out.println("\nРазмер матриц: " + size + " x " + size);
+		double[][] first = randomMatrix(size, size, random);
+		double[][] second = randomMatrix(size, size, random);
+        // double[][] first = randomMatrix(1200, 1500, random);
+        // double[][] second = randomMatrix(1500, 800, random);
 
+		long start = System.nanoTime();
+		double[][] result = multiply(first, second);
+		long naiveTime = System.nanoTime() - start;
+		System.out.printf("multiply: %.3f с%n", naiveTime / 1e9);
+
+		start = System.nanoTime();
+		double[][] resultOpt = multiplyOptimized(first, second);
+		long optTime = System.nanoTime() - start;
+		System.out.printf("multiplyOptimized: %.3f с%n", optTime / 1e9);
+
+		System.out.printf("Ускорение: %.2fx%n", (double) naiveTime / optTime);
+		System.out.println("Результаты совпадают: " + equalMatrices(result, resultOpt, 1e-9));
+	}
 }
-
