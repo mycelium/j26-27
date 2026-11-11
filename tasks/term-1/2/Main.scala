@@ -20,11 +20,13 @@ object Main {
     println(countChange(5, List(2, 3)))
 
     println("\nN-Queens")
-    val solution = nQueens(5)
-    solution match {
-      case Some(cols) => 
-        println("Решение найдено: " + cols.mkString(", "))
-      case None => println("Решения не существует")
+    for (n <- 1 to 10) {
+      nQueens(n) match {
+        case Some(cols) =>
+          println(s"n=$n: решение найдено -> ${cols.mkString(", ")}")
+        case None =>
+          println(s"n=$n: решения не существует")
+      }
     }
   }
 
@@ -92,7 +94,12 @@ object Main {
 
     def solve(placed: List[Int]): Option[List[Int]] = {
       if (placed.length == size) Some(placed)
-      else (0 until size).find(col => isSafe(col, placed)).flatMap(col => solve(col :: placed))
+      else {
+        (0 until size).iterator
+          .filter(col => isSafe(col, placed))
+          .flatMap(col => solve(col :: placed))
+          .nextOption()
+      }
     }
 
     solve(List.empty).map(_.reverse.toArray)
