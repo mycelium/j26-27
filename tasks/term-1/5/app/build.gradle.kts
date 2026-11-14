@@ -19,6 +19,9 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.5")
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.5:models")
+    implementation(libs.guava)
 }
 
 testing {
@@ -40,5 +43,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass = "org.example.Analyser"
+    applicationDefaultJvmArgs = listOf("-Xmx4g")
+    
 }
