@@ -19,6 +19,10 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+    
+    // CoreNLP dependencies
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.6")
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.6:models")
 }
 
 testing {
@@ -41,4 +45,9 @@ java {
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+}
+
+// Добавляем эту секцию, чтобы выделить 4 ГБ памяти для запуска
+tasks.named<JavaExec>("run") {
+    maxHeapSize = "4g"
 }
