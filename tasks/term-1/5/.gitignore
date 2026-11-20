@@ -1,7 +1,8 @@
-# Ignore Gradle project-specific cache directory
+# Gradle caches and build outputs
 .gradle
-
-# Ignore Gradle build output directory
 build
+
+data/imdb.csv
+data/results.csv
 
 !gradle/wrapper/gradle-wrapper.jar
