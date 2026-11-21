@@ -3,9 +3,21 @@
  */
 package org.example;
 
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class App {
@@ -58,7 +70,117 @@ public class App {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public static void main(String[] args) throws IOException {
+        if (args.length < 2 || args.length > 3) {
+            System.err.println("Usage: App <x> <y> [k]");
+            System.exit(1);
+        }
+
+        try {
+            double x = Double.parseDouble(args[0]);
+            double y = Double.parseDouble(args[1]);
+            int k = args.length == 3 ? Integer.parseInt(args[2]) : 3;
+            String label = classify(POINTS, x, y, k);
+            Path output = Path.of("knn.png");
+            savePlot(x, y, k, label, output);
+
+            System.out.printf(Locale.ROOT, "Point (%s, %s), k = %d: class %s%n", x, y, k, label);
+            System.out.println("Plot saved to " + output.toAbsolutePath());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private static void savePlot(double x, double y, int k, String label, Path output) throws IOException {
+        BufferedImage image = new BufferedImage(660, 660, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        int left = 94;
+        int top = 88;
+        int size = 480;
+        int bottom = top + size;
+        double min = Math.floor(Math.min(0, Math.min(x, y)));
+        double max = Math.ceil(Math.max(10, Math.max(x, y)));
+        Map<String, Color> colors = Map.of(
+                "A", new Color(0x2166AC), "B", new Color(0xC45B17), "C", new Color(0x237D5D));
+        Color ink = new Color(0x253041);
+
+        try {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, image.getWidth(), image.getHeight());
+            g.setColor(ink);
+            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 25));
+            g.drawString("KNN classification", left, 41);
+            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+            g.drawString("k = " + k + "   |   Predicted class: " + label, left, 65);
+
+            DecimalFormat tickFormat = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.ROOT));
+            for (int i = 0; i <= 5; i++) {
+                double fraction = i / 5.0;
+                int offset = i * size / 5;
+                double value = min * (1 - fraction) + max * fraction;
+                String tick = Math.abs(value) >= 1000
+                        ? String.format(Locale.ROOT, "%.1e", value) : tickFormat.format(value);
+                int textWidth = g.getFontMetrics().stringWidth(tick);
+
+                g.setColor(new Color(0xDFE5EC));
+                g.drawLine(left + offset, top, left + offset, bottom);
+                g.drawLine(left, bottom - offset, left + size, bottom - offset);
+                g.setColor(ink);
+                g.drawString(tick, left + offset - textWidth / 2, bottom + 22);
+                g.drawString(tick, left - textWidth - 10, bottom - offset + 5);
+            }
+            g.drawLine(left, top, left, bottom);
+            g.drawLine(left, bottom, left + size, bottom);
+            g.drawString("y", left - 5, top - 12);
+            g.drawString("x", left + size + 15, bottom + 5);
+
+            for (Point point : POINTS) {
+                int px = left + axisOffset(point.x(), min, max, size);
+                int py = bottom - axisOffset(point.y(), min, max, size);
+                drawPoint(g, px, py, colors.get(point.label()));
+            }
+            g.setColor(ink);
+            drawStar(g, left + axisOffset(x, min, max, size), bottom - axisOffset(y, min, max, size));
+
+            int legendX = left;
+            for (String group : List.of("A", "B", "C")) {
+                drawPoint(g, legendX + 7, 623, colors.get(group));
+                g.setColor(ink);
+                g.drawString("Class " + group, legendX + 20, 628);
+                legendX += 105;
+            }
+            drawStar(g, legendX + 7, 623);
+            g.drawString("New point", legendX + 22, 628);
+        } finally {
+            g.dispose();
+        }
+
+        ImageIO.write(image, "png", output.toFile());
+    }
+
+    private static int axisOffset(double value, double min, double max, int size) {
+        // halve first so very large coordinates don't overflow the range
+        double fraction = (value / 2 - min / 2) / (max / 2 - min / 2);
+        return (int) Math.round(fraction * size);
+    }
+
+    private static void drawPoint(Graphics2D g, int x, int y, Color color) {
+        g.setColor(color);
+        g.fillOval(x - 6, y - 6, 12, 12);
+    }
+
+    private static void drawStar(Graphics2D g, int x, int y) {
+        Path2D star = new Path2D.Double();
+        star.moveTo(x, y - 11);
+        for (int i = 1; i < 10; i++) {
+            double angle = i * Math.PI / 5;
+            int radius = i % 2 == 0 ? 11 : 5;
+            star.lineTo(x + radius * Math.sin(angle), y - radius * Math.cos(angle));
+        }
+        star.closePath();
+        g.fill(star);
     }
 }
