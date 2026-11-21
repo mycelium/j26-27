@@ -3,7 +3,57 @@
  */
 package org.example;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class App {
+    record Point(double x, double y, String label) {}
+
+    private record Neighbor(String label, double distance) {}
+
+    private static final List<Point> POINTS = List.of(
+            new Point(1.0, 2.0, "A"), new Point(1.6, 3.4, "A"),
+            new Point(2.0, 3.0, "A"), new Point(3.0, 2.0, "A"),
+            new Point(3.3, 3.6, "A"),
+            new Point(6.0, 2.0, "B"), new Point(6.4, 3.9, "B"),
+            new Point(7.5, 3.4, "B"), new Point(8.3, 2.2, "B"),
+            new Point(8.7, 4.1, "B"),
+            new Point(3.5, 7.6, "C"), new Point(4.3, 6.4, "C"),
+            new Point(5.1, 8.5, "C"), new Point(5.9, 7.1, "C"),
+            new Point(6.8, 8.0, "C")
+    );
+
+    static String classify(List<Point> points, double x, double y, int k) {
+        if (!Double.isFinite(x) || !Double.isFinite(y)) {
+            throw new IllegalArgumentException("Coordinates must be finite numbers.");
+        }
+        if (k < 1 || k > points.size()) {
+            throw new IllegalArgumentException("k must be between 1 and " + points.size() + ".");
+        }
+
+        List<Neighbor> nearest = points.stream()
+                .map(p -> new Neighbor(p.label(), Math.hypot(p.x() - x, p.y() - y)))
+                .sorted(Comparator.comparingDouble(Neighbor::distance))
+                .limit(k)
+                .toList();
+
+        Map<String, Integer> votes = new HashMap<>();
+        for (Neighbor neighbor : nearest) {
+            votes.merge(neighbor.label(), 1, Integer::sum);
+        }
+
+        // closest class with the highest vote count wins
+        String winner = nearest.getFirst().label();
+        for (Neighbor neighbor : nearest) {
+            if (votes.get(neighbor.label()) > votes.get(winner)) {
+                winner = neighbor.label();
+            }
+        }
+        return winner;
+    }
+
     public String getGreeting() {
         return "Hello World!";
     }

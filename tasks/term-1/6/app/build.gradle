@@ -16,11 +16,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    // This dependency is used by the application.
-    implementation libs.guava
-}
-
 testing {
     suites {
         // Configure the built-in test suite
