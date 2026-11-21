@@ -66,10 +66,6 @@ public class App {
         return winner;
     }
 
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) throws IOException {
         if (args.length < 2 || args.length > 3) {
             System.err.println("Usage: App <x> <y> [k]");

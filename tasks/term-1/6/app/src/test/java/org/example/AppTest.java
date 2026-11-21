@@ -4,11 +4,32 @@
 package org.example;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class AppTest {
-    @Test public void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull("app should have a greeting", classUnderTest.getGreeting());
+    @Test public void majorityOfTheNearestNeighborsWins() {
+        var points = List.of(
+                new App.Point(100, 0, "A"), new App.Point(101, 0, "A"),
+                new App.Point(1, 0, "A"),
+                new App.Point(2, 0, "B"), new App.Point(3, 0, "B")
+        );
+        assertEquals("B", App.classify(points, 0, 0, 3));
+    }
+
+    @Test public void closestOfTheTiedClassesWins() {
+        var points = List.of(
+                new App.Point(5, 0, "A"), new App.Point(2, 0, "B"),
+                new App.Point(1, 0, "C"),
+                new App.Point(4, 0, "A"), new App.Point(3, 0, "B")
+        );
+        assertEquals("B", App.classify(points, 0, 0, 5));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void kCannotExceedTheNumberOfPoints() {
+        App.classify(List.of(new App.Point(1, 0, "A")), 0, 0, 2);
     }
 }
