@@ -17,8 +17,7 @@ repositories {
 }
 
 dependencies {
-    // This dependency is used by the application.
-    implementation libs.guava
+    implementation 'org.knowm.xchart:xchart:4.0.4'
 }
 
 testing {
@@ -41,4 +40,14 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'org.example.App'
+}
+
+tasks.named('run', JavaExec) {
+    workingDir = rootDir
+    standardInput = System.in
+    systemProperty 'java.awt.headless', 'true'
+}
+
+tasks.register('plotPoints') {
+    dependsOn tasks.named('run')
 }
