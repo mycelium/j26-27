@@ -3,12 +3,134 @@
  */
 package org.example;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.CoreMap;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Properties;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
+    private final StanfordCoreNLP pipeline;
+
+    public App() {
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize,ssplit,pos,parse,sentiment");
+        this.pipeline = new StanfordCoreNLP(props);
+    }
+
+    private String clean(String text) {
+        if (text == null) return "";
+        return text
+                .replaceAll("(?i)<br\\s*/?>", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    /**
+     * Возвращает "positive", "negative" или "neutral"
+     */
+    public String analyze(String review) {
+        String cleaned = clean(review);
+        if (cleaned.isEmpty()) return "neutral";
+
+        Annotation annotation = new Annotation(cleaned);
+        pipeline.annotate(annotation);
+
+        List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+        if (sentences == null || sentences.isEmpty()) {
+            return "neutral";
+        }
+
+        double sum = 0.0;
+        int count = 0;
+        for (CoreMap sentence : sentences) {
+            Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
+            if (tree != null) {
+                sum += RNNCoreAnnotations.getPredictedClass(tree); // 0..4
+                count++;
+            }
+        }
+
+        if (count == 0) return "neutral";
+
+        double avg = sum / count;
+
+        if (avg <= 1.4) return "negative";
+        if (avg >= 2.6) return "positive";
+        return "neutral";
+    }
+
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        if (args.length < 1) {
+            System.out.println("Usage: ./gradlew run --args=\"IMDB Dataset.csv [limit]\"");
+            System.out.println("  limit — сколько отзывов обработать (по умолчанию 20)");
+            return;
+        }
+
+        Path csvPath = Path.of(args[0]);
+        int limit = args.length >= 2 ? Integer.parseInt(args[1]) : 20;
+
+        System.out.println("Loading CoreNLP pipeline (первый запуск может занять 30-60 сек)...");
+        App app = new App();
+        System.out.println("Pipeline ready.\n");
+
+        int processed = 0;
+        int correct = 0;
+        int pos = 0, neg = 0, neu = 0;
+
+        try (CSVReader reader = new CSVReader(new FileReader(csvPath.toFile()))) {
+            reader.readNext(); // пропускаем заголовок
+
+            String[] row;
+            while ((row = reader.readNext()) != null && processed < limit) {
+                if (row.length < 2) continue;
+
+                String review = row[0];
+                String trueLabel = row[1].trim().toLowerCase();
+                String predicted = app.analyze(review);
+
+                processed++;
+                switch (predicted) {
+                    case "positive" -> pos++;
+                    case "negative" -> neg++;
+                    default -> neu++;
+                }
+                if (predicted.equals(trueLabel)) correct++;
+
+                String shortReview = app.clean(review);
+                if (shortReview.length() > 110) {
+                    shortReview = shortReview.substring(0, 107) + "...";
+                }
+
+                System.out.printf("%3d. [%s]%n     → predicted: %-8s  (true: %s)%n%n",
+                        processed, shortReview, predicted, trueLabel);
+            }
+        } catch (IOException | CsvValidationException e) {
+            System.err.println("Error reading CSV: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("========== SUMMARY ==========");
+        System.out.printf("Processed : %d%n", processed);
+        System.out.printf("Positive  : %d%n", pos);
+        System.out.printf("Negative  : %d%n", neg);
+        System.out.printf("Neutral   : %d%n", neu);
+        System.out.printf("Accuracy  : %.1f%%%n",
+                processed == 0 ? 0.0 : 100.0 * correct / processed);
+        System.out.println("=============================");
     }
 }
