@@ -19,6 +19,13 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+
+    // Stanford CoreNLP + models
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.7")
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.7:models")
+
+    // CSV reader
+    implementation("com.opencsv:opencsv:5.9")
 }
 
 testing {
@@ -34,11 +41,16 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+}
+
+// Больше памяти для моделей CoreNLP
+tasks.named<JavaExec>("run") {
+    jvmArgs("-Xmx4g")
 }
