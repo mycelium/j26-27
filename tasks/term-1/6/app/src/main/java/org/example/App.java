@@ -3,12 +3,195 @@
  */
 package org.example;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    /** Точка с координатами и меткой класса */
+    public static class Point {
+        public final double x;
+        public final double y;
+        public final String label;   // null, если класс неизвестен
+
+        public Point(double x, double y, String label) {
+            this.x = x;
+            this.y = y;
+            this.label = label;
+        }
+
+        public Point(double x, double y) {
+            this(x, y, null);
+        }
+
+        public double distanceTo(Point other) {
+            double dx = this.x - other.x;
+            double dy = this.y - other.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+    }
+
+    /**
+     * Классификатор k-ближайших соседей.
+     * k — количество соседей.
+     */
+    public static class KNNClassifier {
+        private final List<Point> train;
+        private final int k;
+
+        public KNNClassifier(List<Point> train, int k) {
+            this.train = train;
+            this.k = k;
+        }
+
+        public String classify(Point query) {
+            // Считаем расстояние до всех точек обучающей выборки
+            List<Point> sorted = new ArrayList<>(train);
+            sorted.sort(Comparator.comparingDouble(p -> p.distanceTo(query)));
+
+            // Берём k ближайших
+            Map<String, Integer> votes = new HashMap<>();
+            for (int i = 0; i < Math.min(k, sorted.size()); i++) {
+                String label = sorted.get(i).label;
+                votes.merge(label, 1, Integer::sum);
+            }
+
+            // Побеждает класс с наибольшим числом голосов
+            return votes.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse("unknown");
+        }
+    }
+
+    // ========== Рисование графика ==========
+
+    public static void drawPoints(List<Point> points, Point query, String predicted,
+                                  String filename) throws IOException {
+        int width = 800;
+        int height = 600;
+        int margin = 50;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        // Фон
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, width, height);
+
+        // Оси
+        g.setColor(Color.LIGHT_GRAY);
+        g.drawLine(margin, height - margin, width - margin, height - margin); // X
+        g.drawLine(margin, margin, margin, height - margin);                 // Y
+
+        // Находим границы данных
+        double rawMinX = points.stream().mapToDouble(p -> p.x).min().orElse(0);
+        double rawMaxX = points.stream().mapToDouble(p -> p.x).max().orElse(1);
+        double rawMinY = points.stream().mapToDouble(p -> p.y).min().orElse(0);
+        double rawMaxY = points.stream().mapToDouble(p -> p.y).max().orElse(1);
+
+        // Немного запаса (делаем final-переменные)
+        final double minX = rawMinX - (rawMaxX - rawMinX) * 0.1;
+        final double maxX = rawMaxX + (rawMaxX - rawMinX) * 0.1;
+        final double minY = rawMinY - (rawMaxY - rawMinY) * 0.1;
+        final double maxY = rawMaxY + (rawMaxY - rawMinY) * 0.1;
+
+        // Функция перевода координат в пиксели
+        java.util.function.Function<Point, int[]> toPixel = p -> {
+            int px = margin + (int) ((p.x - minX) / (maxX - minX) * (width - 2 * margin));
+            int py = height - margin - (int) ((p.y - minY) / (maxY - minY) * (height - 2 * margin));
+            return new int[]{px, py};
+        };
+
+        // Цвета классов
+        Map<String, Color> colors = Map.of(
+                "A", new Color(220, 50, 50),
+                "B", new Color(50, 120, 220),
+                "C", new Color(40, 180, 80)
+        );
+
+        // Рисуем точки обучающей выборки
+        g.setStroke(new BasicStroke(1.5f));
+        for (Point p : points) {
+            int[] pix = toPixel.apply(p);
+            g.setColor(colors.getOrDefault(p.label, Color.GRAY));
+            g.fillOval(pix[0] - 6, pix[1] - 6, 12, 12);
+            g.setColor(Color.BLACK);
+            g.drawOval(pix[0] - 6, pix[1] - 6, 12, 12);
+        }
+
+        // Рисуем запросную точку (большой крест)
+        if (query != null) {
+            int[] pix = toPixel.apply(query);
+            g.setColor(Color.MAGENTA);
+            g.setStroke(new BasicStroke(3f));
+            g.drawLine(pix[0] - 10, pix[1] - 10, pix[0] + 10, pix[1] + 10);
+            g.drawLine(pix[0] - 10, pix[1] + 10, pix[0] + 10, pix[1] - 10);
+
+            g.setFont(new Font("SansSerif", Font.BOLD, 14));
+            g.drawString("query → " + predicted, pix[0] + 12, pix[1] - 8);
+        }
+
+        // Легенда
+        g.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        int legendY = 30;
+        for (Map.Entry<String, Color> e : colors.entrySet()) {
+            g.setColor(e.getValue());
+            g.fillOval(width - 120, legendY - 8, 12, 12);
+            g.setColor(Color.BLACK);
+            g.drawString("Class " + e.getKey(), width - 100, legendY + 4);
+            legendY += 22;
+        }
+
+        g.dispose();
+        ImageIO.write(image, "PNG", new File(filename));
+        System.out.println("График сохранён: " + filename);
+    }
+
+    public static void main(String[] args) throws IOException {
+        // ===== Обучающая выборка (3 класса) =====
+        List<Point> train = List.of(
+                // Класс A (красный) — левый нижний угол
+                new Point(1.0, 1.2, "A"),
+                new Point(1.5, 2.0, "A"),
+                new Point(2.0, 1.0, "A"),
+                new Point(1.8, 1.7, "A"),
+                new Point(0.8, 1.5, "A"),
+
+                // Класс B (синий) — правый верхний
+                new Point(7.0, 7.5, "B"),
+                new Point(8.0, 6.5, "B"),
+                new Point(7.5, 8.0, "B"),
+                new Point(6.8, 7.0, "B"),
+                new Point(8.2, 7.8, "B"),
+
+                // Класс C (зелёный) — середина
+                new Point(4.0, 4.5, "C"),
+                new Point(4.5, 3.8, "C"),
+                new Point(3.5, 4.0, "C"),
+                new Point(5.0, 4.2, "C"),
+                new Point(4.2, 5.0, "C")
+        );
+
+        // Точка, которую нужно классифицировать
+        Point query = new Point(3.0, 3.5);
+
+        // k = 3
+        KNNClassifier knn = new KNNClassifier(train, 3);
+        String predicted = knn.classify(query);
+
+        System.out.println("Запросная точка: (" + query.x + ", " + query.y + ")");
+        System.out.println("Предсказанный класс: " + predicted);
+
+        // Рисуем и сохраняем картинку
+        drawPoints(train, query, predicted, "knn_plot.png");
     }
 }
